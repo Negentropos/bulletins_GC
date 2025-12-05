@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item"><a href="{% url 'mise_en_page_list' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Mises en page</a></li>
+{% endblock breadcrumb%}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+     {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md mt-4">
+    <div class="row">
+            <div class="col-12 col-lg-11 col-xl-10">
+                <h1 class="mb-3">Modifier une mise en page</h1>
+
+                <div class="form-floating mb-3">
+                    {{form.intitule|add_classes:'form-control'}}
+                    <label for="{{form.intitule.id_for_label}}"">Intitulé</label>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <fieldset class="rounded shadow p-4">
+                            <h2 class="fs-4 pb-2">Police de caractère</h2>
+
+                            
+
+                            <div class="row">
+                                <div class="col-12 mb-3 mb-md-0 col-md-6">
+                                    <div class="form-floating mb-3">
+                                        {{form.police|add_classes:'form-select'}}
+                                        <label for="{{form.police.id_for_label}}">Police</label>
+                                    </div>
+
+                                   
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating mb-3">
+                                        {{ form.taillePolice|add_classes:'form-control'}}
+                                        <label for="{{form.taillePolice.id_for_label}}">Taille de la police</label>
+                                    </div>
+                                </div>
+                               
+                            </div>
+
+                        </fieldset>
+
+                        <fieldset class="rounded shadow p-4 mt-4">
+                            <h2 class="fs-4 pb-2">Couleurs</h2>
+
+                            <div class="row">
+                                <div class="col-12 mb-3 mb-md-0 col-md-6">
+
+                                    <div class="mb-2">
+                                        <label for="{{form.couleurAppreciation.id_for_label}}" class="mb-2">Appreciations</label>    
+                                        {{ form.couleurAppreciation|add_classes:'form-control form-control-color'}}
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="{{form.couleurStageProjet.id_for_label}}" class="mb-2">Stages & Projets</label>    
+                                        {{ form.couleurStageProjet|add_classes:'form-control form-control-color'}}
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+
+                                    <div class="mb-2">
+                                        <label for="{{form.couleurAvis.id_for_label}}" class="mb-2">Avis trimestriel</label>    
+                                        {{ form.couleurAvis|add_classes:'form-control form-control-color'}}
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <label for="{{form.couleurNotice.id_for_label}}" class="mb-2">Notice</label>    
+                                        {{ form.couleurNotice|add_classes:'form-control form-control-color'}}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                    <div class="col-12 mt-4 mt-sm-0 col-sm-6">
+                        <fieldset class="rounded shadow p-4">
+                            <h2 class="fs-4 pb-2">Dimensions du cadre</h2>
+
+                            <div class="form-floating mb-3">
+                                {{ form.hauteurPage1|add_classes:'form-control'}}
+                                <label for="{{form.hauteurPage1.id_for_label}}">Hauteur cadre page 1 (cm)</label>
+                            </div>
+            
+                            <div class="form-floating mb-3">
+                                {{ form.largeurPage1|add_classes:'form-control'}}
+                                <label for="{{form.largeurPage1.id_for_label}}">Largeur cadre (cm)</label>
+                            </div>
+            
+                            <div class="form-floating mb-3">
+                                {{ form.hauteurPage2|add_classes:'form-control'}}
+                                <label for="{{form.hauteurPage2.id_for_label}}">Hauteur cadre page 2 (cm)</label>
+                            </div>
+
+                        </fieldset>
+
+                        <fieldset class="rounded shadow p-4 mt-3">
+                            <h2 class="fs-4 pb-2">Largeur des colonnes</h2>
+
+                            <div class="form-floating mb-3">
+                                {{ form.largeurIntitule|add_classes:'form-control'}}
+                                <label for="{{form.largeurIntitule.id_for_label}}">Largeur titre discipline (%)</label>
+                            </div>
+            
+                            <div class="form-floating mb-3">
+                                {{ form.largeurDescriptif|add_classes:'form-control'}}
+                                <label for="{{form.largeurDescriptif.id_for_label}}">Largeur titre descriptif (%)</label>
+                            </div>
+            
+                            <div class="form-floating mb-3">
+                                {{ form.largeurEvaluation|add_classes:'form-control'}}
+                                <label for="{{form.largeurEvaluation.id_for_label}}">Largeur titre évaluation (%)</label>
+                            </div>
+                           
+
+                        </fieldset>
+
+                    </div>
+                </div>
+
+
+            </fieldset>
+    
+    
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary shadow me-2" type="submit">Modifier</button>
+                    <a class="btn btn-secondary shadow" href="{% url 'mise_en_page_list' %}">Annuler</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+    
+
+
+
+{% endblock content %}

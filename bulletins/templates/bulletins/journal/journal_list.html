@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Logs (admin)</li>
+
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 col-11-lg col-xl-10 mt-4">
+            <h1 class="mb-2">Journal des évènements</h1>
+
+            <div class="row">
+              <div class="col-12 col-md-5 offset-md-7 col-lg-4 offset-lg-8 mb-1">
+                  <div>
+                      <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                  </div>
+              </div>
+          </div>
+          <table id="table" 
+          style="border-color:transparent;"
+          data-toggle="table"
+          data-search="true"
+          data-search-selector="#customSearch"
+          data-maintain-meta-data="true"
+          data-height="600"
+          data-pagination="true"
+          data-page-list="[10, 25, 50, 100]"
+          data-page-size="25"
+          data-locale="fr-FR"
+          >
+            <thead>
+              <tr>
+                <th data-field="date" data-sortable="true" scope="col">Date</th>
+                <th data-field="user" data-sortable="true" data-searchable="true" scope="col">Utilisateur</th>
+                <th data-field="action" data-sortable="true" scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for ligne in lignes %}
+                <tr>
+                    <td>{{ligne.date}}</td>
+                    <td>{{ligne.utilisateur.nom_court}}</td>
+                    <td>{{ligne.message}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>        
+
+        
+    </div>
+</div>
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                <a class="btn btn-primary shadow me-2" href="{% url 'export_journal_csv' %}">Exporter</a>
+                <a class="btn btn-secondary shadow" href="#" data-bs-toggle="modal" data-bs-target="#deleteJournal"">Effacer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="deleteJournal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+            <h1 class="modal-title" id="staticBackdropLabel">Effacer le journal</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <p><strong>Sûr(e) ? </strong> Même pas une petite <a href="{% url 'export_journal_csv' %}">exportation des données</a> avant ?...
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+            <a class="btn btn-primary" href="{% url 'journal_delete'%}">Supprimer</a>
+          </div>
+        </div>
+      </div>
+  </div>
+
+
+
+
+
+{% endblock content %}

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Mes projets</li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 mt-4">
+                <h1 class="mb-2">Mes projets {{annee_en_cours}}</h1>
+                
+                <div class="row mb-2">
+                    {% if trimestres_actif %}
+                    <div class="col-12 col-sm-6 mb-2 mb-md-0 col-md-7 col-lg-8">
+                        <div class="d-flex justify-content-md-end align-items-center">
+                            <a class="btn btn-outline-primary" href="{% url 'projets_add' %}"><i class="bi bi-plus-circle"> Ajouter</i></a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-5 col-lg-4">
+                        <div>
+                            <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12 col-sm-6 col-md-5 offset-md-7 col-lg-4 offset-lg-8">
+                        <div class="d-flex justify-content-end align-items-center">
+                            <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <table id="table" 
+                    style="border-color:transparent;"
+                    data-toggle="table"
+                    data-search="true"
+                    data-search-selector="#customSearch"
+                    data-maintain-meta-data="true"
+                    data-height="600"
+                    data-pagination="true"
+                    data-page-list="[10, 25, 50, 100]"
+                    data-page-size="25"
+                    data-locale="fr-FR"
+                    >
+                    <thead>
+                    <tr>
+                        <th data-field="type" data-sortable="true" scope="col">Type</th>
+                        <th data-field="eleve" data-sortable="true" scope="col">Élève</th>
+                        <th data-field="classe" data-sortable="true" scope="col" class="text-center">Classe</th>
+                        <th data-field="tuteur" data-sortable="true" scope="col" >Tuteur</th>
+                        <th data-field="trimestre" data-sortable="true" scope="col" >Trimestre</th>
+                        <th data-field="relecture" data-sortable="true"scope="col" class="text-center" >Relec. act.</th>
+                        <th data-field="relecteur" data-sortable="true" scope="col" >Relu par</th>
+                        <th data-field="supprimer" data-sortable="true" scope="col" ></th>
+                        
+
+                    </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for projet in projets %}
+                        <tr>
+                        <td>{% if request.user == projet.tuteur and projet.trimestre in trimestres_actif  %}<a href="{% url 'projets_change' projet.id %}">
+                            {{ projet.get_typeProjet_display }}</a>{%else%}<a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropProjetDetail{{projet.id}}">
+                                {{ projet.get_typeProjet_display }}</a>{%endif%}</td>    
+                        <td><a href="{% url 'eleve_detail' projet.eleve.id%}">{{ projet.eleve}}</a></td>
+                        <td class="text-center">{{ projet.eleve.show_classe }}e</td>
+                        <td>{{ projet.tuteur.nom_court }}</td>
+                        <td>{{ projet.trimestre }}</td>
+                        <td class="text-center">{% if projet.relectureActive %}<i class="bi bi-check-circle-fill text-primary"></i>{% else %}<i class="bi bi-x-circle"></i>{% endif %}</td>
+                        <td>{{ projet.relecteur.nom_court }}</td>
+                        <td>{% if request.user == projet.tuteur and projet.trimestre in trimestres_actif  %}<a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropRemoveProjet{{projet.id}}">
+                            <i class="bi bi-trash"></i></a>{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            
+    
+        </div>
+    
+    </div>
+</div>
+
+{% for projet in projets %}
+    <div class="modal fade" id="staticBackdropProjetDetail{{projet.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+                <h1 class="modal-title fs-2" id="staticBackdropLabel">{{projet.eleve}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+
+                    <h2 class="mb-4">{{projet.get_typeProjet_display}} - {{projet.eleve.show_classe}}e - {{projet.trimestre}}</h2>
+
+
+                    <div class="row gx-5">
+                        <div class="col-6">
+
+                            <h4>{{ projet.titre|default_if_none:"Descriptif" }}</h4>
+
+                            <p>{{projet.descriptif|default_if_none:"Non renseigné"}}</p>
+
+                            <p>{% if projet.tuteur %} Tuteur : <strong>{{projet.tuteur}}</strong>{% endif %}</p>
+
+                        </div>
+                        <div class="col-6">
+
+                            <h4>Appreciation</h4>
+
+                            <p>{{projet.appreciation|default_if_none:"Non renseigné"}}</p>
+        
+
+                        </div>
+                    </div>
+              </div>
+
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+    {% for projet in projets %}
+    <div class="modal fade" id="staticBackdropRemoveProjet{{projet.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+                <h1 class="modal-title fs-3" id="staticBackdropLabel">Supprimer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+
+                <h3>Attention</h3>
+            <p>Vous vous apprêtez à supprimer :</p>
+            <p> <strong>{{projet.get_typeProjet_display}} - {{projet.eleve}} - {{projet.trimestre}}</strong>.</p>
+            <p>Cette opération est irréversible !</p>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
+                <a class="btn btn-danger" href="{% url 'projets_delete' projet.id %}">
+                    Supprimer
+                  </a></div>
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+{% endblock content %}

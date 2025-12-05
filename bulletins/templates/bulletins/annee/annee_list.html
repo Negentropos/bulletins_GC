@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Gestion des années (admin)</li>
+{% endblock breadcrumb%}
+
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 col-sm-11 col-lg-10 mt-4">
+            <h1 class="mb-4">Année scolaire {{ annee_en_cours.intitule }}</h1>
+
+          <fieldset class="rounded shadow p-4">
+            <h3>Changer d'année</h3>
+
+            <p>Cette procédure est à engager pour démarrer une nouvelle année, ou pour modifier les informations des années précédentes.</p>
+            <p>La nouvelle année scolaire doit être préalablement créée avant d'être activée.</p>
+
+            <div class="row">
+              <div class="col-12 mb-2 mb-sm-0 col-sm-auto">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#staticBackdropAdd">
+                  Créer une nouvelle année
+              </button>
+              </div>
+              <div class="col-12 col-sm-auto">
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdropChange">
+                Changer l'année en cours
+            </button>
+              </div>
+            </div>
+            
+                
+            </fieldset>
+
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th scope="col">Année{{annees|length|pluralize}} scolaire{{annees|length|pluralize}} disponible{{annees|length|pluralize}}</th>
+                </tr>
+                </thead>
+            {% for annee in annees %}
+            <tr>
+                <th>{{ annee.intitule }}</th>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <fieldset class="mb-4 rounded shadow p-4">
+          <h3>Modifier ou supprimer une année ?</h3>
+          <p>La modification ou la suppression d'une année scolaire est une opération présentant trop de risques pour être simplement accessible depuis l'interface du superviseur. </p>
+          <p>Si de telles opérations sont nécessaires, accédez directement à l'interface d'administration Django du site.</p>
+        </fieldset>
+    </div>
+    
+</div>
+
+
+
+<div class="modal fade" id="staticBackdropAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+          <h1 class="modal-title fs-3" id="staticBackdropLabel">Créer nouvelle année</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{form.edit_annee}}
+                <div class="form-floating mb-3">
+                    {{ form.titre.errors }}
+                    {{form.intitule|add_classes:'form-control'}}
+                    <label for="{{form.intitule.id_for_label}}">XXXX/XXXX</label>
+                </div>
+                <p><span><input type="submit" class="btn btn-primary" value="Valider"></span> <span><a class="btn btn-secondary" href="{% url 'annee_list' %}">Annuler</a></span></p>
+                </table>
+                </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="staticBackdropChange" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+          <h1 class="modal-title fs-3" id="staticBackdropLabel">Changer l'année en cours</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+            <form action="" method="post">
+                {% csrf_token %}
+                <input id="modifAnneEnCours" name="modifAnneEnCours" type="hidden" value="True">
+            
+    
+            <p>Cette opération aura pour conséquence de basculer les éditions (disciplines, évaluations, retards & absences) et les configurations de trimestre sur une autre annnée</p>
+    
+                   <div class="form-floating mb-3">
+                        <select name="annees" class="form-select" id="annees">
+                          {% for annee in annees %}
+                      <option value="{{annee.id}}">{{annee.intitule}}</option>
+                        {% endfor %}
+                        </select>
+                        <label for="annees">Sélectionnez l'année à activer</label>
+                      </div>
+                <p><span><input type="submit" class="btn btn-primary" value="Valider"></span> <span><a class="btn btn-secondary" href="{% url 'annee_list' %}">Annuler</a></span></p>
+    
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
+
+{% endblock content %}

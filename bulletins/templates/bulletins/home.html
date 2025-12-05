@@ -1,0 +1,92 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block breadcrumb%}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 col-lg-10 col-xl-9 mt-4">
+                <h1 class="mb-3 fs-3">Bienvenue {{ user.first_name }} {{ user.last_name }}</h1>
+                <div class="row row-flex mb-4">
+                    {% if trimestres %}
+                    {% if user.role == 'ADMIN' or user.role == 'PROF' %}
+
+                    <div class="col-12 col-sm-10 mb-2 mb-md-0 col-md-4">
+                        <fieldset class="content rounded shadow p-2">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'my_disciplines_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-pencil text-primary"></i> Mes enseignements {% if disciplines %}<span class="badge bg-primary rounded-pill ms-2">{{disciplines|length}}</span>{% endif %}</a>
+                                <a href="{% url 'my_stages_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-pencil text-primary"></i> Mes stages {% if stages %}<span class="badge bg-primary rounded-pill ms-2">{{stages|length}}</span>{% endif %}</a>
+                                <a href="{% url 'my_projets_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-pencil text-primary"></i> Mes projets {% if projets %}<span class="badge bg-primary rounded-pill ms-2">{{projets|length}}</span>{% endif %}</a>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-12 col-sm-10 mb-2 mb-md-0 col-md-4">
+                        <fieldset class="content rounded shadow p-2">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'corrections_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-pen text-primary"></i> Corriger{% if corrections %}<span class="badge bg-primary rounded-pill ms-2">{{corrections}}</span>{% endif %}</a>
+                                <a href="{% url 'my_corrections_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-list-check text-primary"></i> Valider corrections{% if my_corrections %}<span class="badge bg-primary rounded-pill ms-2">{{my_corrections}}</span>{% endif %}</a>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="col-12 col-sm-10 col-md-4">
+                            <fieldset class="content rounded shadow p-2">
+                                <div class="list-group list-group-flush">
+                                        <a href="{% url 'absences_retards' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-calendar-check text-primary"></i> Absences & retards</a>
+                                        <a href="{% url 'avis_college_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-person text-primary"></i> Avis trimestriels{% if avis %}<span class="badge bg-primary rounded-pill ms-2">{{avis|length}}</span>{% endif %}</a>
+                                </div>
+                            </fieldset>
+                    </div>
+                {%endif %}
+                {% endif %}
+                </div>
+
+                <div class="row row-flex mt-xl-5">
+                    <div class="col-12 col-sm-10 mb-2 mb-md-0 col-md-4">
+                        <fieldset class="content rounded shadow p-2">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'disciplines_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi bi-eye text-primary"></i> Enseignements</a>
+                                <a href="{% url 'stages_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi bi-eye text-primary"></i> Stages</a>
+                                <a href="{% url 'projets_liste' %}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi bi-eye text-primary"></i> Projets</a>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-12 col-sm-10 mb-2 mb-md-0 col-md-4">
+                        <fieldset class="content rounded shadow p-2">
+                            <div class="list-group list-group-flush">
+                                <a href="{% url 'eleves_list'%}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-file-person text-primary"></i> Élèves</a>
+                                <a href="{% url 'classes_list'%}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-people text-primary"></i> Classes</a>
+                                <a href="{% url 'anciens_eleves_list'%}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-file-person-fill text-primary"></i> Anciens élèves</a>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-12 col-sm-10 col-md-4">
+                        <fieldset class="content rounded shadow p-2">
+
+                        <div class="list-group list-group-flush">
+                            {% if user.role == 'ADMIN'%}
+                            <a class="list-group-item list-group-item-action bg-light-subtle" href="{% url 'bulletins_admin_select' %}"><i class="bi bi-file-earmark-pdf text-primary"></i> Éditer bulletins</a>
+                            <a class="list-group-item list-group-item-action bg-light-subtle" href="{% url 'bareme_admin_list' %}"><i class="bi bi-file-earmark-text text-primary"></i> Notices</a>
+                            <a class="list-group-item list-group-item-action bg-light-subtle" href="{% url 'mise_en_page_list' %}"><i class="bi bi-file-earmark-image text-primary"></i> Mises en page</a>
+                            
+                            {% else %}
+                            <a href="{% url 'bulletins_select'%}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-file-earmark-text text-primary"></i> Bulletins</a>
+                            <a href="{% url 'bareme_list'%}" class="list-group-item list-group-item-action bg-light-subtle"><i class="bi bi-file-earmark-text text-primary"></i> Notices</a>
+                            {% endif %}
+                        </div>
+                        </fieldset>
+                    </div>
+                </div>
+    </div>
+
+        
+
+
+        </div>
+</div>
+
+
+{% endblock content %}

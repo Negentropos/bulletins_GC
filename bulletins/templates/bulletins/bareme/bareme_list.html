@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Notices bulletins</li>
+
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 col-11-lg col-xl-10 mt-4">
+            <h1 class="mb-2">Notice bulletin</h1>
+
+                {% if 'admin' in request.path %}
+                <p><span><a class="btn btn-outline-primary mt-2 shadow" href="{% url 'bareme_add' %}"><i class="bi bi-plus-circle"> Ajouter</i></a></span></p>
+                {% endif %}
+
+                {% if baremes %}
+
+
+    
+                <table class="table table-striped" style="border-color:transparent;" id="table"
+                data-toggle="table"
+                >
+                <thead>
+                <tr>
+                  {% if 'admin' in request.path %}
+                    <th scope="col" data-sortable="true">id</th>
+                    {% endif %}
+                    <th scope="col" data-sortable="true">Intitulé</th>
+                    <th scope="col" data-sortable="true" class="text-center">Par défaut</th>
+                    {% if 'admin' in request.path %}
+                    <th scope="col" class="text-center" >Supprimer</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                    {% for bareme in baremes %}
+                    <tr>
+                      {% if 'admin' in request.path %}
+
+                    <td>{{bareme.id}}</td>
+                    {% endif %}
+
+                    <td>{% if 'admin' in request.path %}<a href="{% url 'bareme_change' bareme.id %}">{{bareme.intitule}}</a>{% else %}<a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropBaremeDetail{{bareme.id}}">{{bareme.intitule}}</a>{% endif %}</td>
+                    <td class="text-center">{% if bareme.defaut %}<i class="bi bi-check-circle"></i>{% else %}<i class="bi bi-x-circle"></i>{% endif %}</td>
+                    {% if 'admin' in request.path %}
+                    <td class="text-center" ><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropRemoveBareme{{bareme.id}}">
+                        <i class="bi bi-trash"></i></a></td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+
+        
+            {% else %}
+            <p class="mt-4">Aucune notice n'a encore été éditée.</p>
+            {% endif %}
+           
+        </div>
+    
+    </div>
+    
+    {% for bareme in baremes %}
+    <div class="modal fade" id="staticBackdropRemoveBareme{{bareme.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-5">
+                <h1 class="modal-title" id="staticBackdropLabel">Supprimer une notice</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-5">
+    
+                <h3>Attention</h3>
+            <p>Vous vous apprêtez à supprimer la notice "{{bareme.intitule}}".</p>
+
+            <p>Cette opération est irréversible.</p>
+                    
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <a class="btn btn-primary" href="{% url 'bareme_delete' bareme.id %}">
+                    Supprimer
+                  </a>
+            </div>
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+    {% for bareme in baremes %}
+    <div class="modal fade" id="staticBackdropBaremeDetail{{bareme.id}}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-5">
+                <h1 class="modal-title fs-2" id="staticBackdropLabel">Notice d'évaluation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-5">
+                {% if bareme.intro %}
+                <p>{{bareme.intro}}</p>
+                {% else %}
+                <p>Texte d'introduction non défini.</p>
+                {% endif %}
+
+                <hr>
+
+                {% if bareme.attitude %}
+                <p><strong>Attitude : </strong>{{bareme.attitude}}</p>
+                {% else %}
+                <p><strong>Attitude : </strong> non défini.</p>
+                {% endif %}
+                
+
+                <table class="table table-striped">
+                  <tbody>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">A</td>
+                          <td class="align-middle">
+                            {% if bareme.attitudeA %}
+                            {{bareme.attitudeA}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                              
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">B</td>
+                          <td class="align-middle">
+                            {% if bareme.attitudeB %}
+                            {{bareme.attitudeB}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">C</td>
+                          <td class="align-middle">
+                            {% if bareme.attitudeC %}
+                            {{bareme.attitudeC}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">D</td>
+                          <td class="align-middle">
+                            {% if bareme.attitudeD %}
+                            {{bareme.attitudeD}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <hr>
+
+              {% if bareme.engagement %}
+              <p><strong>Engagement : </strong>{{bareme.engagement}}</p>
+              {% else %}
+              <p><strong>Engagement : </strong> non défini.</p>
+              {% endif %}
+
+                <table class="table table-striped">
+                  <tbody>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">A</td>
+                          <td class="align-middle">
+                            {% if bareme.engagementA %}
+                            {{bareme.engagementA}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                              
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">B</td>
+                          <td class="align-middle">
+                            {% if bareme.engagementB %}
+                            {{bareme.engagementB}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">C</td>
+                          <td class="align-middle">
+                            {% if bareme.engagementC %}
+                            {{bareme.engagementC}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">D</td>
+                          <td class="align-middle">
+                            {% if bareme.engagementD %}
+                            {{bareme.engagementD}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <hr>
+
+              {% if bareme.resultat %}
+              <p><strong>Résultat : </strong>{{bareme.resultat}}</p>
+              {% else %}
+              <p><strong>Résultat : </strong> non défini.</p>
+              {% endif %}
+
+           
+
+                <table class="table table-striped">
+                  <tbody>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">A</td>
+                          <td class="align-middle">
+                            {% if bareme.resultatA %}
+                            {{bareme.resultatA}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                              
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">B</td>
+                          <td class="align-middle">
+                            {% if bareme.resultatB %}
+                            {{bareme.resultatB}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">C</td>
+                          <td class="align-middle">
+                            {% if bareme.resultatC %}
+                            {{bareme.resultatC}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">D</td>
+                          <td class="align-middle">
+                            {% if bareme.resultatD %}
+                            {{bareme.resultatD}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              </div>
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+</div>
+
+
+{% endblock content %}

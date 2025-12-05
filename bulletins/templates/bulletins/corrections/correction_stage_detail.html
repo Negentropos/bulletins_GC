@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item"><a href="{% url 'corrections_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Mes corrections</a></li>
+{% endblock breadcrumb %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+     {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md mt-4">
+        <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">Corriger le suivi de stage de {{stage.eleve.prenom}} {{stage.eleve.nom}}</h1>
+                    <h2>{{stage.eleve.show_classe}}e - {{stage.trimestre}}</h2>
+                
+                    <div class="row row-flex">
+                        <div class="col-12 col-lg-8 mb-lg-5 mb-xl-0">
+                            <fieldset class="content mt-2 rounded shadow p-4 pb-4 pb-lg-2">
+                            <h2 class="fs-4 pb-2">{{stage.get_typeStage_display}}</h2>
+                            
+                            <strong>Descriptif</strong>
+                            <div class="border rounded p-3 mt-3 bg-light user-select-all">
+                                {{stage.descriptif}}
+                            </div>
+
+                            <div class="form-floating mt-3 mb-3 p-0">
+                                {{form.descriptif_correction|add_classes:'form-control bg-primary-subtle pt-5 pb-4'}}
+                                <label for="{{form.descriptif_correction.id_for_label}}">{% if stage.descriptif_correction %}Ma proposition de correction{% else %}Proposer une correction{% endif %}</label>
+                            </div>
+
+                            <p><strong>Appreciation</strong></p>
+                            <div class="border rounded p-3 mt-3 bg-light user-select-all">
+                                {{stage.appreciation}}
+                            </div>
+
+                            <div class="form-floating mb-3 mt-3 p-0">
+                                {{form.appreciation_correction|add_classes:'form-control bg-primary-subtle pt-5 pb-4'}}
+                                <label for="{{form.appreciation_correction.id_for_label}}">{% if stage.appreciation_correction %}Ma proposition de correction{% else %}Proposer une correction{% endif %}</label>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                    <div class="col-12 col-lg-4 mb-lg-5 mb-xl-0">
+                        
+                        <fieldset class="content mt-2 rounded shadow p-4 pb-4 pb-lg-2">
+
+                            <h3>Infos</h3>
+
+                            <ul class="list-group list-group-flush">
+                                {% if stage.lieuStage %}<li class="list-group-item">Lieu(x) : <strong>{{stage.lieuStage}}</strong></li>{% endif %}
+                                {% if stage.maitreStage %}<li class="list-group-item">Maitre de stage : <strong>{{stage.maitreStage}}</strong></li>{% endif %}
+                                {% if stage.tuteur %}<li class="list-group-item">Tuteur : <strong>{{stage.tuteur}}</strong></li>{% endif %}
+                                {% if stage.dureeStage %}<li class="list-group-item">Durée : <strong>{{stage.nbJours}} jours</strong></li>{% endif %}
+                                {% if stage.dateDebut %}<li class="list-group-item">A démarré le <strong>{{stage.dateDebut}}</strong></li>{% endif %}
+                                {% if stage.dateFin %}<li class="list-group-item">S'est terminé le <strong>{{stage.dateFin}}</strong></li>{% endif %}
+                              </ul>
+
+                            
+
+                            <div class="form-floating mt-3">
+                                {{form.remarque_correction|add_classes:'form-control bg-danger-subtle pt-5 pb-4 h200px'}}
+                                <label for="{{form.remarque_correction.id_for_label}}">{% if stage.remarque_correction %}Mes remarques{% else %}Remarque ? Suggestion ?{% endif %}</label>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                    
+                </div>
+                
+
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-primary me-2 shadow">Enregistrer</button> 
+                    {% if 'admin' in request.path %}
+                    <a href="{% url 'corrections_admin_liste'%}" class="btn btn-secondary shadow me-2">Annuler</a>
+                    {% else %}
+                    <a href="{% url 'corrections_liste' %}" class="btn btn-secondary shadow me-2">Annuler</a>
+                    {% endif %}
+                    <a class="btn btn-danger" data-bs-toggle="offcanvas" href="#offcanvasNotice" role="button" aria-controls="offcanvasNotice">
+                        Notice
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+
+<!--TODO : cette notice est dégueulasse-->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNotice" aria-labelledby="offcanvasNoticeLabel">
+        <div data-bs-theme="dark" class="offcanvas-header bg-danger">
+          <h3 class="offcanvas-title text-white" id="offcanvasExampleLabel">Notice corrections</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+    
+                <p>Vous pouvez ici proposer des corrections dans les champs dédiés.</p>
+                <p>Ces corrections seront proposées au responsable de du stage, qui pourra les valider ou les invalider.</p>
+
+        
+          
+        </div>
+    </div>
+
+
+
+{% endblock content %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item">{% if 'admin' in request.path %}<a href="{% url 'disciplines_liste_admin' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Supervision</a>{% else %}<a href="{% url 'disciplines_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Enseignements</a>{% endif %}</li>
+<li class="breadcrumb-item">{% if 'admin' in request.path %}<a href="{% url 'discipline_change' discipline.id %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} | {{discipline.trimestre.show_racc}} | {{discipline.show_classes}}</a>{% else %}<a href="{% url 'discipline_change' discipline.id %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} | {{discipline.trimestre.show_racc}} | {{discipline.show_classes}}</a>{% endif %}</li>
+{% endblock breadcrumb %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md">
+    <div class="row">
+            <div class="col-12 mt-4">
+            <h1 class="mb-2">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} - {{discipline.trimestre.show_racc}} - {{discipline.show_classes}}</h1>
+            <h2 class="mb-3">Modifier les compétences</h2>
+
+            {% if 'admin' in request.path %}
+            <div class="alert alert-primary alert-dismissible fade show mt-4" role="alert">
+                 <i class="bi bi-exclamation-triangle"></i> En tant qu'administrateur vous vous apprêtez à modifier l'enseignement d'un collègue
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+        {{ formset.management_form }}
+        {% for form in formset %}
+                {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+                {% endfor %}
+    
+            <div class="form-floating mb-3">
+                {{form.intitule|add_classes:'form-control'}}
+                <label for="{{form.intitule.id_for_label}}">Nouvel intitulé</label>
+            </div>
+            
+            {% endfor %}
+    </div>
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                    {% if 'admin' in request.path %}
+                    <a href="{% url 'competence_connaissance_admin_list' discipline.id %}" class="btn btn-secondary me-2">Annuler</a>
+                    {% else %}
+                    <a href="{% url 'competence_connaissance_list' discipline.id %}" class="btn btn-secondary me-2">Annuler</a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+
+
+{% endblock content %}

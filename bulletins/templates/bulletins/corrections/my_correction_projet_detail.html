@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item">{% if 'admin' in request.path %}<a href="{% url 'corrections_admin_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Corrections</a>{% else %}<a href="{% url 'my_corrections_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Corrections</a>{% endif %}</li>
+{% endblock breadcrumb %}
+{% block content %}
+<form action="" method="post">
+  {% csrf_token %}
+   {% for hidden in form.hidden_fields %}
+      {{ hidden }}
+      {% endfor %}
+
+<div class="container-fluid container-md">
+  <h2 class="mb-2 mt-2 mt-sm-4">Valider des corrections pour {{projet.get_typeProjet_display}} {{projet.trimestre}}</h2>
+  <h3> {{projet.eleve.prenom}} {{projet.eleve.nom}} - {{projet.eleve.show_classe}}<sup>e</sup> classe</h2>
+  <h4 class="mb-3">proposées par {{projet.relecteur.nom_court}}</h4>
+</div>
+
+{% if 'admin' in request.path %}
+
+<div class="container">
+    <div class="row">    
+        <div <div class="col-12 col-xl-11">
+            <div class="alert alert-primary alert-dismissible fade show mt-2 mb-0" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> En tant qu'administrateur vous vous apprêtez à modifier les corrections d'un collègue
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+
+<div class="container-fluid container-md mt-4">
+      <div class="row">
+              <div class="col-12">
+                 <div class="row row-flex">
+                    <div class="col-12 col-xl-11 mb-lg-5 mb-xl-0">
+                        <fieldset class="content mt-2 rounded shadow p-4 pb-4 pb-lg-2">
+
+
+                          {% if projet.remarque_correction %}
+
+                          <div class="border rounded p-3 bg-danger-subtle"><span class="fw-bold">Remarque du correcteur : </span>{{projet.remarque_correction}}</div>
+
+                          <hr />
+                          {% endif %}
+
+                          <h4 class="mb-3">Titre</h4>
+
+                          <div class="row">
+
+                              <div class="col mb-3">
+                                  <div class="content border rounded p-4 bg-light user-select-all">{{projet.titre|default_if_none:"Non renseigné"}}</div>
+                              </div>
+                              {% if projet.titre_correction %}
+                              <div class="col-12 col-lg-6 mb-3">
+                                  <div class="content form-floating">
+                                      {{form.titre_correction|add_classes:'form-control bg-primary-subtle pt-5 pb-4'}}
+                                      <label for="{{form.titre_correction.id_for_label}}">Correction proposée</label>
+                                  </div>
+                              </div>
+                              {% endif %}
+                          </div>
+
+                          <hr/>
+
+                          <h4 class="mb-3">Descriptif</h4>
+
+                          <div class="row">
+                              
+                              <div class="col mb-3">
+                                  <div class="content border rounded p-4 bg-light user-select-all">
+                                      {{projet.descriptif|default_if_none:"Non renseigné"}}
+                                  </div>
+                              </div>
+                              {%if projet.descriptif_correction %}
+                              <div class="col-12 col-lg-6 mb-3 ">
+                                  <div class="content form-floating">
+                                      {{form.descriptif_correction|add_classes:'form-control bg-primary-subtle pt-5 pb-4'}}
+                                      <label for="{{form.descriptif_correction.id_for_label}}">Correction proposée</label>
+                                  </div>
+                              </div>
+                              {% endif %}
+                          </div>
+
+                          <hr/>
+
+                          <h4 class="mb-3">Appréciation</h4>
+
+                          <div class="row">
+                              
+                              <div class="col mb-3">
+                                  <div class="content border rounded p-4 bg-light user-select-all">
+                                      {{projet.appreciation|default_if_none:"Non renseigné"}}
+                                  </div>
+                              </div>
+                              {%if projet.appreciation_correction %}
+                              <div class="col-12 col-lg-6 mb-3 ">
+                                  <div class="content form-floating">
+                                      {{form.appreciation_correction|add_classes:'form-control bg-primary-subtle pt-5 pb-4'}}
+                                      <label for="{{form.appreciation_correction.id_for_label}}">Correction proposée</label>
+                                  </div>
+                              </div>
+                              {% endif %}
+                          </div>
+
+
+
+                        </fieldset>
+                    </div>
+                </div>
+              </div>
+      </div>
+</div>
+
+
+<div class="modal fade" id="staticBackdropDelete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+          <h1 class="modal-title" id="staticBackdropLabel">Supprimer</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pb-4">
+           
+            <h2>Attention !</h2>
+
+            <p>Ceci aura pour effet de supprimer définitivement toutes les propositions de corrections associées à ce projet.</p>
+
+            <span><button class="btn btn-primary me-3" type="button" data-bs-dismiss="modal" aria-label="Close">J'annule</button></span>
+
+            {% if 'admin' in request.path %}
+            <span><a class="btn btn-danger" href="{% url 'my_correction_admin_projet_delete' projet.id %}">Supprimer les corrections</a></span>
+
+            {% else %}
+            <span><a class="btn btn-danger" href="{% url 'my_correction_projet_delete' projet.id %}">Supprimer les corrections</a></span>
+
+            {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="staticBackdropSave" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+          <h1 class="modal-title" id="staticBackdropLabel">Valider</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+           
+            <h2>Attention !</h2>
+
+            <p>Ceci aura pour effet de valider toutes les corrections proposées sur cette page !</p>
+
+            <p>Je peux invalider une correction en effaçant son contenu, avant de valider.</p>
+
+            <span><button class="btn btn-primary me-3" type="button" data-bs-dismiss="modal" aria-label="Close">J'annule</button></span>
+
+            <span><button class="btn btn-danger" type="submit">Valider les correction</button></span>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary shadow me-2" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdropSave">Valider</button>
+                    <button class="btn btn-danger shadow me-2" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdropDelete">Invalider</button>
+                    {% if 'admin' in request.path %}
+                    <a href="{% url 'corrections_admin_liste'%}" class="btn btn-secondary shadow me-2">Annuler</a>
+                    {% else %}
+                    <a href="{% url 'my_corrections_liste' %}" class="btn btn-secondary shadow me-2">Annuler</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+    
+</form>
+
+{% endblock content %}

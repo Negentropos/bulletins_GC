@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item"><a href="{% url 'avis_college_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Avis du collège</a></li>
+{% endblock breadcrumb%}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+     {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md mt-4">
+    <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Ajouter un avis trimestriel</h1>
+
+                <div class="row gx-4">
+
+                    <div class="col-md-auto">
+
+
+                            <div class="form-floating mb-3">
+                                {{ form.trimestre|add_classes:'form-select'}}
+                                <label for="{{form.trimestre.id_for_label}}">Sélectionnez le trimestre</label>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                {{ form.eleve|add_classes:'form-select'}}
+                                <label for="{{form.eleve.id_for_label}}">Sélectionnez l'élève</label>
+                            </div>
+
+                    </div>
+
+                    <div class="col-md-7">
+
+                            <div class="form-floating mb-3">
+                                {{form.avis|add_classes:'form-control h200px'}}
+                                <label for="{{form.avis.id_for_label}}"">Avis</label>
+                            </div>
+
+
+                    </div>
+
+
+            </fieldset>
+            
+
+
+            
+
+                
+
+
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary shadow me-2" type="submit">Créer</button>
+                    <a class="btn btn-secondary shadow" href="{% url 'avis_college_liste' %}">Annuler</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+
+
+
+
+{% endblock content %}

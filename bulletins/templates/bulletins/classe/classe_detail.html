@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+
+          <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'classes_list' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Classes</a></li>
+       
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 col-lg-11 col-xl-10 mt-4">
+              <h1 class="mb-2">{{classe.nom}}e classe {{annee_en_cours}} - {{classe.get_cycle_display}}</h1>
+
+        {% if eleves %}
+
+        <table class="table table-striped" style="border-color:transparent;" id="table"
+        data-toggle="table">
+            <thead>
+              <tr>
+                <th data-sortable="true">Nom & prénom</th>
+                <th data-sortable="true" class="text-center" data-sortable="true">Genre</th>
+                <th data-sortable="true" class="text-center" data-sortable="true">Date naissance</th>
+                <th data-sortable="true" class="text-center" data-sortable="true">Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for eleve in eleves %}
+                <tr>
+                    <td data-sortable="true"> <a href="{%url 'eleve_detail' eleve.id%}">{{eleve.nom}} {{eleve.prenom}}</a> </td>
+                    <td class="text-center" data-sortable="true">{% if eleve.genre == 'M' %}<i class="bi bi-gender-male"></i>{% else %}<i class="bi bi-gender-female"></i>{% endif %}</td>
+                    <td class="text-center" data-sortable="true">{{ eleve.dateNaissance|date:"d/m/Y" }}</td>
+                    <td class="text-center" data-sortable="true">{{ eleve.get_statut_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+
+          {% else %}
+
+          <p>Aucun élève affecté à cette classe.</p>
+
+          {% endif %}
+
+
+    </div>
+
+</div>
+
+</div>
+    
+{% endblock content %}

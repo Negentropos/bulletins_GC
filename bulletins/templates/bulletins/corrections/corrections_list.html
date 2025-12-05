@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block breadcrumb %}
+      <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+      <li class="breadcrumb-item active" aria-current="page" class="text-secondary">Mes corrections</li>     
+{% endblock breadcrumb %}
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 mt-4">
+              <h1 class="mb-4">Mes demandes de correction</h1>
+
+                
+    
+                <table class="table table-striped mt-2">
+                    <thead>
+                    <tr>
+                        <th scope="col">Enseignement/Stages/Projet</th>
+                        <th scope="col">Enseignant(s)/Tuteur</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% if disciplines or stages or projets %}
+                        {% for discipline in disciplines %}
+                        <tr>
+                        <td><a href="{% url 'correction_discipline_detail' discipline.id %}">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} {% if discipline.show_classes %}{{ discipline.show_classes }}{% else %}...{% endif %} {% if discipline.trimestre %}{{ discipline.trimestre }}{% else %}...{% endif %}</a></td>
+                        <td>{{ discipline.show_enseignants}}</td>
+                        </tr>
+                        {% endfor %}
+                        {% for stage in stages %}
+                        <tr>
+                        <td><a href="{% url 'correction_stage_detail' stage.id%}">{{ stage.get_typeStage_display}} {{stage.eleve}} {{ stage.eleve.show_classe}}e {{ stage.trimestre}}</a></td>
+                        <td>{{ stage.tuteur}}</td>
+                        </tr>
+                        {% endfor %}
+                        {% for projet in projets %}
+                            <tr>
+                            <td><a href="{% url 'correction_projet_detail' projet.id%}">{{ projet.get_typeProjet_display}} {{projet.eleve}} {{ projet.eleve.show_classe}}e {{ projet.trimestre}}</a></td>
+                            <td>{{ projet.tuteur}}</td>
+                            </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="5">
+                            Aucune correction n'est actuellement demandée.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+
+        </div>
+    
+    </div>
+
+</div>
+
+
+
+{% endblock content %}

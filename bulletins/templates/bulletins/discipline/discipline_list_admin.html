@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Enseignements (admin)</li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 mt-4">
+              <h1 class="mb-2">Gestion Enseignements {{annee_en_cours}}</h1>    
+        
+              <div class="row">
+                <div class="col-12 col-md-5 offset-md-7 col-lg-4 offset-lg-8 mb-1">
+                    <div>
+                        <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                    </div>
+                </div>
+              </div>
+            <table id="table" 
+                style="border-color:transparent;"
+                data-toggle="table"
+                data-search="true"
+                data-search-selector="#customSearch"
+                data-maintain-meta-data="true"
+                data-height="600"
+                data-pagination="true"
+                data-page-list="[10, 25, 50, 100]"
+                data-page-size="25"
+                data-locale="fr-FR"
+                >
+                
+                <thead>
+                    <tr>
+                        <th data-field="id" data-sortable="true" scope="col">id</th>
+                        <th data-field="enseignement" data-sortable="true" scope="col">Intitulé</th>
+                        <th data-field="trimestre" data-sortable="true" scope="col" class="text-center">Trim.</th>
+                        <th data-field="enseignant" data-sortable="true" scope="col">Prof(s)</th>
+                        <th data-field="classe" data-sortable="true" scope="col">Classe(s)</th>
+                        <th data-field="eleves" data-sortable="true" scope="col" class="text-center">Élèves</th>
+                        <th data-field="relecture" data-sortable="true"scope="col" class="text-center" >Relec.</th>
+                        <th data-field="suppr" data-sortable="false" scope="col" class="text-center" ></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for discipline in disciplines %}
+                    <tr>
+                        <td>{{discipline.id}}</td>
+                        <td><a href="{% url 'discipline_admin_change' discipline.id %}">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} - {{discipline.trimestre.show_racc}} - {{discipline.show_classes}}</td>
+                        <td class="text-center">{{discipline.trimestre.show_num}}</td>
+                        <td>{{discipline.show_enseignants}}</td>
+                        <td>{{discipline.show_classes}}</td>
+                        <td class="text-center"><a href="{% url 'discipline_admin_eleve_change' discipline.id %}"><i class="bi bi-people-fill"></i></a></td>
+                        <td class="text-center">{% if discipline.relectureActive %}<i class="bi bi-check-circle-fill text-primary"></i>{% else %}<i class="bi bi-x-circle"></i>{% endif %}</td>
+                        <td class="text-center" ><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropRemoveDiscipline{{discipline.id}}">
+                        <i class="bi bi-trash"></i></a></td>
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+            </table>
+    
+      </div>
+    </div>
+
+    {% for discipline in disciplines %}
+    <div class="modal fade" id="staticBackdropRemoveDiscipline{{discipline.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-5">
+                <h1 class="modal-title" id="staticBackdropLabel">Supprimer une discipline</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-5">
+    
+                <h3>Attention</h3>
+            <p>Vous vous apprêtez à supprimer l'enseignement :</p>
+
+            <div class="border rounded p-3 mb-2 bg-light">
+                {{discipline.intitule}} - {{discipline.show_classes}} - {{discipline.show_enseignants}} - {{discipline.trimestre}}
+              </div>
+
+            <p>Si des appréciations ont été renseignées pour celle-ci, elles seront perdues !</p>
+                    
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+		{% if 'admin' in request.path%}
+                <a class="btn btn-primary" href="{% url 'discipline_admin_delete' discipline.id %}">
+                    Supprimer
+                  </a>
+		{% else %}
+		<a class="btn btn-primary" href="{% url 'discipline_delete' discipline.id %}">Supprimer</a>
+		{% endif %}
+            </div>
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Corrections (admin)</li>     
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 mt-4">
+                <h1 class="mb-2">Gestion corrections {{annee_en_cours}}</h1> 
+
+            {% if disciplines or projets or stages %}
+            <div class="row">
+                <div class="col-12 col-md-5 offset-md-7 col-lg-4 offset-lg-8 mb-1">
+                    <div>
+                        <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                    </div>
+                </div>
+              </div>
+            <table id="table" 
+                style="border-color:transparent;"
+                data-toggle="table"
+                data-search="true"
+                data-search-selector="#customSearch"
+                data-maintain-meta-data="true"
+                data-height="300"
+                data-pagination="true"
+                data-page-list="[10, 25, 50, 100]"
+                data-page-size="25"
+                data-locale="fr-FR"
+                >
+                <thead>
+                <tr>
+                    <th scope="col">Enseignements/Stages/Projets</th>
+                    <th scope="col">Classe(s)/Élève</th>
+                    <th scope="col">Enseignant(s)/Tuteur</th>
+                    <th scope="col">Trimestre</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for discipline in disciplines %}
+                    <tr>
+                    <td><a href="{% url 'my_correction_discipline_admin_detail' discipline.id %}">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} - {{discipline.trimestre.show_racc}}</a></td>
+                    <td>{{ discipline.show_classes}}</td>
+                    <td>{{discipline.show_enseignants}}</td>
+                    <td>{{ discipline.trimestre }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for stage in stages %}
+                    <tr>
+                    <td><a href="{% url 'my_correction_stage_admin_detail' stage.id %}">{{stage.get_typeStage_display}} {{stage.trimestre.show_racc}}</a></td>
+                    <td>{{stage.eleve}} {{stage.eleve.show_classe}}</td>
+                    <td>{{ stage.tuteur.nom_court}}</td>
+                    <td>{{ stage.trimestre}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for projet in projets %}
+                    <tr>
+                    <td><a href="{% url 'my_correction_projet_admin_detail' projet.id %}">{{projet.get_typeProjet_display}}</a></td>
+                    <td>{{projet.eleve}}</td>
+                    <td>{{ projet.tuteur.nom_court}}</td>
+                    <td>{{ projet.trimestre}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-secondary mt-5" role="alert">
+                Aucune correction n'est actuellement en attente de validation.
+            </div>
+            {% endif%}
+        </div>
+    
+    </div>
+</div>
+
+
+{% endblock content %}

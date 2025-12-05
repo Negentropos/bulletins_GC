@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item"><a href="{% url 'disciplines_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Enseignements</a></li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+
+                    <h1 class="mb-4 mt-2">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} - {{discipline.trimestre.show_racc}} - {{discipline.show_classes}} - {{discipline.show_enseignants}}</h1>
+
+                    <div class="row gx-3">
+                        <div class="col-12 col-lg-6 col-xl-5">
+                
+                            <p>{%if discipline.intitule_court%}<strong>Intitulé complet : {{discipline.intitule}}</strong>{%endif%}</p>
+                            <p>{% if discipline.titre %}<strong>{{discipline.titre}}</strong>{%endif%}</p>
+                            <p>{% if discipline.descriptif %}<strong>Descriptif :</strong> {{discipline.descriptif}}{%endif%}</p>
+                        
+                        </div>
+                        <div class="col-12 col-lg-6 col-xl-5">
+                            <ul class="list-group list-group-flush">
+                                {% if discipline.volumeHoraire %}<li class="list-group-item bg-light-subtle">Volume horaire : {{discipline.volumeHoraire}} h</li>{%endif%}
+                                {% if discipline.typeEnseignement %}<li class="list-group-item bg-light-subtle">{{discipline.get_typeEnseignement_display}}</li>{%endif%}
+                                {% if discipline.dateDebut and discipline.dateFin %}<li class="list-group-item bg-light-subtle">du {{discipline.dateDebut}} au {{discipline.dateFin}}</li>{%endif%}
+                                {% if discipline.moyenne and discipline.activerMoyenne %}<li class="list-group-item bg-light-subtle">Moyenne de la classe : {{discipline.moyenne}}</li>{%endif%}
+                            </ul>
+                        </div>
+
+                    {% if competences %}
+
+                    <div class="row">
+                        <div class="col-12 col-lg-11 col-xl-10">
+                            <hr/>
+
+                            <h2 class="fs-5 mb-3">Compétences évaluées</h2>
+
+                            <table class="table table-striped">
+                                {% for competence in competences %}
+                                <tr>
+                                    <td>{{competence.intitule}}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+
+                    {% endif %}
+                </div>
+            </div>
+</div>
+
+
+<div class="container-fluid container-md strip">
+    {% for appreciation in appreciations %}
+    <div class="row mt-2 mb-2 pt-md-4 pb-2 pb-md-4 striped">
+        <div class="col-12 col-lg-11 col-xl-10">
+            <fieldset class="rounded shadow p-3 p-md-5">
+                <h2 class="fs-4 mb-3">{{appreciation.eleve.nom}} {{appreciation.eleve.prenom}}</h2>
+    
+                <div class="row">
+                    <div class="col-6 col-sm-4">
+                        <strong>Attitude :</strong> {{appreciation.attitude|default_if_none:"..."}}
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        <strong>Engagement :</strong> {{appreciation.engagement|default_if_none:"..."}}
+                    </div>
+                    <div class="col-6 col-sm-4">
+                        {% if appreciation.note %}<strong>Note :</strong> {{appreciation.note}}{% else %}<strong>Résultat :</strong> {{appreciation.resultat|default_if_none:"..."}}{% endif %}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    {% if appreciation.commentaire %}
+                    <p><strong>Commentaire</strong> : {{appreciation.commentaire|default_if_none:"..."}}</p>
+                    {% endif %}
+                </div>
+                {% if competences %}
+                <div class="row">
+                    <table class="table table-striped">
+                        {% for competence in competences%}
+                        <tr>
+                            <td>{{competence.intitule}}</td>
+                            {% for competenceAppreciation in competencesAppreciations %}
+                                {% if competenceAppreciation.competence == competence and competenceAppreciation.appreciation == appreciation %}
+                                <td>{{competenceAppreciation.evaluation|default_if_none:"..."}}</td>
+                                {%endif%}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                {% endif %}
+                
+                
+            </fieldset>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endblock content %}

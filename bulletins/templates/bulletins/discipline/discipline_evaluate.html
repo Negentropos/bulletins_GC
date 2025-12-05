@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb %}
+
+          <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+          <li class="breadcrumb-item">{% if 'admin' in request.path %}<a href="{% url 'disciplines_liste_admin' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Supervision</a>{% else %}<a href="{% url 'my_disciplines_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Mes enseignements</a>{% endif %}</li>
+          <li class="breadcrumb-item"><a href="{% url 'discipline_change' discipline.id %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} | {{discipline.trimestre.show_racc}} | {{discipline.show_classes}}</a></li>
+          <li class="breadcrumb-item active" aria-current="page" class="text-secondary">Évaluations</li>
+      
+{% endblock breadcrumb %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+     {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md">
+            <h1 class="mb-2 mt-2 mt-sm-4">{{ discipline.intitule }} {{ discipline.show_classes}} - {{ discipline.trimestre}}</h1>
+            <h2 class="mb-2">Évaluations</h2>
+    </div>
+</div>
+{% if discipline.enseigneeA %}
+
+{% if 'admin' in request.path %}
+
+<div class="container">
+    <div class="row">    
+        <div class="col-12 col-lg-11 col-xl-10">
+
+            <div class="alert alert-primary alert-dismissible fade show mt-4" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> En tant qu'administrateur vous vous apprêtez à modifier l'enseignement d'un collègue
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+
+<div class="container-fluid container-md strip">
+    
+    {% for form in liste_formulaires %}
+    <div class="row mt-2 mb-2 pt-md-4 pb-2 pb-md-4 striped">
+        <div class="col-12 col-lg-11 col-xl-10">
+            <fieldset class="rounded shadow p-3 p-md-5">
+                        <h3 class="mb-3">{{ form.0.prenom }} {{ form.0.nom }}</h3>
+                    
+                        <div class="row">
+            
+                            {% for hidden in form.0.hidden_fields %}
+                            {{ hidden }}
+                            {% endfor %}
+                        
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-floating mb-3">
+                                            {{ form.1.attitude|add_classes:'form-control'}}
+                                            <label for="{{form.attitude.id_for_label}}">Attitude</label>
+                                        </div>
+                                    </div>
+            
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-floating mb-3">
+                                            {{ form.1.engagement|add_classes:'form-control'}}
+                                            <label for="{{form.engagement.id_for_label}}">Engagement</label>
+                                        </div>
+                                    </div>
+            
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-floating mb-3">
+                                            {{ form.1.resultat|add_classes:'form-control'}}
+                                            <label for="{{form.resultat.id_for_label}}">Résultat</label>
+                                        </div>
+                                    </div>
+            
+                                    <div class="col-12 col-sm-3">
+                                        <div class="form-floating mb-3">
+                                            {{ form.1.note|add_classes:'form-control'}}
+                                            <label for="{{form.note.id_for_label}}">Note</label>
+                                        </div>
+                                    </div>
+            
+                        </div>
+                                
+                        <div class="form-floating mb-3">
+                                {{form.1.commentaire|add_classes:'form-control h100px'}}
+                                <label for="{{form.1.commentaire.id_for_label}}">Votre commentaire</label>
+                        </div>
+                        {% if not form.2|length_is:'0'  %}
+                        <h4 class="fs-5 mb-3">Compétences</h4>
+                                
+                            <div class="row mt-2">
+                                    {{ form.2.management_form }}
+                                    {% for form_competence in form.2 %}
+                                        {% for hidden in form.2.hidden_fields %}
+                                        {{ hidden }}
+                                        {% endfor %}
+                                        <div class="col-12 col-sm-10">
+                                            <div class="mb-3">
+                                                {{ form_competence.competence|add_classes:'form-select'}}
+                                            </div>
+                                        </div>
+            
+                                        <div class="col-12 col-sm-2">
+                                            <div class="mb-3">
+                                                {{form_competence.evaluation|add_classes:'form-select'}}
+                                            </div>
+                                        </div>
+                                    
+                                    {% endfor %}
+            
+                            </div>
+                        {% endif %}
+                        </fieldset>
+                    </div>
+        
+    </div>
+    {% endfor %}
+</div>
+
+
+
+        {% else %}
+
+<p>Aucun élève n'est inscrit à cet enseignement.</p>
+
+{% endif %}
+
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                  <button type="submit" class="btn btn-primary me-2 shadow">Enregistrer</button> 
+                    {% if 'admin' in request.path %}
+                    <a href="{% url 'disciplines_liste_admin'%}" class="btn btn-secondary shadow me-2">Annuler</a>
+                    {% else %}
+                    <a href="{% url 'disciplines_liste' %}" class="btn btn-secondary shadow me-2">Annuler</a>
+                    {% endif %}
+                    <a class="btn btn-danger" data-bs-toggle="offcanvas" href="#offcanvasNotice" role="button" aria-controls="offcanvasNotice">
+                        Barême
+                      </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+
+
+<div class="container-fluid">
+    <div class="row py-3">
+
+        <div class="offcanvas offcanvas-start p-0" tabindex="-1" id="offcanvasNotice" aria-labelledby="offcanvasNoticeLabel">
+            <div class="offcanvas-header bg-primary p-3" data-bs-theme="dark" >
+              <h3 class="offcanvas-title text-white" id="offcanvasExampleLabel" data-bs-theme="dark">Notice d'évaluation</h3>
+              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body p-3">
+        
+                <p>Les indications données ci-dessous figureront comme notice explicative sur les bulletins édités.</p>
+
+                {% if bareme.attitude %}
+                <p><strong>Attitude : </strong>{{bareme.attitude}}</p>
+                {% else %}
+                <p><strong>Attitude : </strong> non défini.</p>
+                {% endif %}
+                
+
+                <table class="table table-striped">
+                  <tbody>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">A</td>
+                          <td class="align-middle">
+                            {% if bareme.attitudeA %}
+                            {{bareme.attitudeA}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                              
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">B</td>
+                          <td class="align-middle">
+                            {% if bareme.attitudeB %}
+                            {{bareme.attitudeB}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">C</td>
+                          <td class="align-middle">
+                            {% if bareme.attitudeC %}
+                            {{bareme.attitudeC}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">D</td>
+                          <td class="align-middle">
+                            {% if bareme.attitudeD %}
+                            {{bareme.attitudeD}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <hr>
+
+              {% if bareme.engagement %}
+              <p><strong>Engagement : </strong>{{bareme.engagement}}</p>
+              {% else %}
+              <p><strong>Engagement : </strong> non défini.</p>
+              {% endif %}
+
+                <table class="table table-striped">
+                  <tbody>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">A</td>
+                          <td class="align-middle">
+                            {% if bareme.engagementA %}
+                            {{bareme.engagementA}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                              
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">B</td>
+                          <td class="align-middle">
+                            {% if bareme.engagementB %}
+                            {{bareme.engagementB}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">C</td>
+                          <td class="align-middle">
+                            {% if bareme.engagementC %}
+                            {{bareme.engagementC}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">D</td>
+                          <td class="align-middle">
+                            {% if bareme.engagementD %}
+                            {{bareme.engagementD}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+
+              <hr>
+
+              {% if bareme.resultat %}
+              <p><strong>Résultat : </strong>{{bareme.resultat}}</p>
+              {% else %}
+              <p><strong>Résultat : </strong> non défini.</p>
+              {% endif %}
+
+           
+
+                <table class="table table-striped">
+                  <tbody>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">A</td>
+                          <td class="align-middle">
+                            {% if bareme.resultatA %}
+                            {{bareme.resultatA}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                              
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">B</td>
+                          <td class="align-middle">
+                            {% if bareme.resultatB %}
+                            {{bareme.resultatB}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">C</td>
+                          <td class="align-middle">
+                            {% if bareme.resultatC %}
+                            {{bareme.resultatC}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td class="text-center fs-4 align-middle">D</td>
+                          <td class="align-middle">
+                            {% if bareme.resultatD %}
+                            {{bareme.resultatD}}
+                            {% else %}
+                            non défini
+                            {% endif %}
+                            
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+            
+              
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+

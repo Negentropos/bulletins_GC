@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Classes (admin)</li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 mt-4">
+                <h1 class="mb-4">Gestion des classes</h1>
+
+        <fieldset class="mb-3 rounded shadow p-4">
+            <h3>Info pratique</h3>
+
+            <p>L'initialisation d'une année scolaire en <a href="{% url 'import_csv' %}">important les informations sur les élèves</a> permet la création et l'affectation automatique de classes pour l'année en cours.
+            </p>
+        </fieldset>
+
+        <p><span><button type="button" class="btn btn-outline-primary mt-2 shadow" data-bs-toggle="modal" data-bs-target="#staticBackdropAddClass">
+                    <i class="bi bi-plus-circle" > Ajouter</i>
+                </button></span></p>
+
+
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Intitulé</th>
+                <th class="text-center">Année</th>
+                <th class="text-center">Tuteurs</th>
+                <th class="text-center">Effectifs</th>
+                <th class="text-center">Cycle</th>
+                <th class="text-center"></th>
+                <th class="text-center"></th>
+            </tr>
+             </thead>
+            <tbody>
+            {% for classe in classes %}
+            <tr>
+                <td>{{classe.show_nom}}</td>
+                <td class="text-center"> {{classe.annee.intitule}}</td>
+                <td class="text-center"> {{classe.show_tuteur}}</td>
+                <td class="text-center"> {{classe.effectifs}}</td>
+                <td class="text-center"> {{classe.get_cycle_display}}</td>
+                <td class="text-center" >{% if classe.annee == annee_en_cours %}<a href="{% url 'classe_change' classe.id %}"><i class="bi bi-tools"></i></a>{% endif %}</td>
+                <td class="text-center" >{% if classe.annee == annee_en_cours %}<a href="#" data-bs-toggle="modal" data-bs-target="#delete{{classe.id}}">
+                    <i class="bi bi-trash" ></i>{% endif %}
+                </a></td>
+        
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+
+{% for classe in classes %}
+<div class="modal fade" id="delete{{classe.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div data-bs-theme="dark" class="modal-header bg-pink">
+            <h1 class="modal-title" id="staticBackdropLabel">Supprimer la classe</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h2><strong>{{classe.nom}}e classe - {{classe.annee}}</strong></h2>
+            <p>Cela n'impliquera pas la suppressions d'autres données (élèves, appréciations etc.), simplement les affectation des élèves à cette classe.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <a class="btn btn-danger" href="{% url 'classe_delete' classe.id %}">Supprimer</a>
+          </div>
+        </div>
+      </div>
+  </div>
+  {% endfor %}
+
+  <div class="modal fade" id="staticBackdropAddClass" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div data-bs-theme="dark" class="modal-header bg-pink">
+            <h1 class="modal-title" id="staticBackdropLabel">Ajouter une classe</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="" method="post">
+            {% csrf_token %}
+            {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+            {% endfor %}
+            {{ formClasse.edit_classe }}
+          
+          <div class="modal-body">
+
+            <div class="form-floating mb-3">
+                {{ form.nom.errors }}
+                {{form.nom|add_classes:'form-control'}}
+                <label for="{{form.intitule.id_for_label}}"">Nom de la classe</label>
+            </div>
+
+            <label class="fs-5" for="{{form.tuteur.id_for_label}}">Tuteurs</label>
+
+            <div class="border rounded p-2 border-secondary overflow-auto mb-3 mt-2" style="height:100px">
+                {{form.tuteur}}
+            </div>
+
+            <div class="form-floating mb-3">
+              {{ form.cycle|add_classes:'form-select'}}
+              <label for="{{form.cycle.id_for_label}}">Cycle</label>
+            </div>
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary">Valider</button>
+          </div>
+        </form>
+        </div>
+      </div>
+  </div>
+
+</div>
+
+
+{% endblock content %}

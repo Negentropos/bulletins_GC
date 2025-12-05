@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Élèves (admin)</li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 mt-4">
+              <h1 class="mb-2">Gestion des élèves</h1>
+
+        <p><button type="button" class="btn btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#staticBackdropAddEleve">
+          <i class="bi bi-plus-circle" > Ajouter</i>
+      </button></p>
+
+        <div class="row">
+          <div class="col-12 col-md-5 offset-md-7 col-lg-4 offset-lg-8 mb-1">
+              <div>
+                  <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+              </div>
+          </div>
+        </div>
+        <table id="table" 
+        style="border-color:transparent;"
+        data-toggle="table"
+        data-search="true"
+        data-search-selector="#customSearch"
+        data-maintain-meta-data="true"
+        data-height="600"
+        data-pagination="true"
+        data-page-list="[10, 25, 50, 100]"
+        data-page-size="50"
+        data-locale="fr-FR"
+        >
+            <thead>
+              <tr>
+                <th data-field="id" data-sortable="true" scope="col">id</th>
+                <th data-field="nom" data-sortable="true" scope="col">Nom & prénom</th>
+                <th data-field="classe" data-sortable="true" scope="col" class="text-center" >Classe {{ annee_en_cours }}</th>
+                <th data-field="genre" data-searchable="false" data-sortable="true" scope="col" class="text-center" >Genre</th>
+                <th data-field="dateNaissance" data-searchable="false" data-sortable="true" scope="col" class="text-center" >Date naissance</th>
+                <th data-field="statut" data-sortable="true" scope="col" class="text-center" >Statut</th>
+                <th class="text-center">Modifier</th>
+                <th class="text-center">Supprimer</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for eleve in eleves %}
+                <tr>
+                    <td class="text-center" data-sortable="true">{{eleve.id}}</td>
+                    <td> <a href="{%url 'eleve_detail' eleve.id%}">{{eleve.nom}} {{eleve.prenom}}</a> </td>
+                    <td class="text-center" data-sortable="true"> {{ eleve.show_classe }}</td>
+                    <td class="text-center" data-sortable="true">{% if eleve.genre == 'M' %}<i class="bi bi-gender-male"></i>{% else %}<i class="bi bi-gender-female"></i>{% endif %}</td>
+                    <td class="text-center" data-sortable="true">{{ eleve.dateNaissance|date:"d/m/Y" }}</td>
+                    <td class="text-center" data-sortable="true">{{ eleve.get_statut_display }}</td>
+                    <td class="text-center" data-sortable="true"> <a href="{% url 'eleve_change' eleve.id%}"><i class="bi bi-tools"></i></a> </td>
+                    <td class="text-center" ><a href="#" data-bs-toggle="modal" data-bs-target="#delete{{eleve.id}}">
+                      <i class="bi bi-trash" ></i>
+                  </a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+    </div>
+</div>
+
+{% for eleve in eleves %}
+<div class="modal fade" id="delete{{eleve.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div data-bs-theme="dark" class="modal-header bg-pink">
+            <h1 class="modal-title" id="staticBackdropLabel">Supprimer un élève </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Alerte :</strong> vous vous apprêtez à supprimer l'élève {{eleve.nom}} {{eleve.prenom}} du logiciel.</p>
+            <p>Cette opération supprimera définitivement toutes les informations associées à cet élève : appréciations, retards et absences, toute année confondue !</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+            <a class="btn btn-primary" href="{% url 'eleve_delete' eleve.id %}">Supprimer</a>
+          </div>
+        </div>
+      </div>
+  </div>
+  {% endfor %}
+
+<div class="modal fade" id="staticBackdropAddEleve" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+        <div data-bs-theme="dark" class="modal-header bg-pink">
+          <h1 class="modal-title" id="staticBackdropLabel">Créer un nouvel élève</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="" method="post">
+          {% csrf_token %}
+        
+        <div class="modal-body">
+
+          <div class="row gx-3">
+            <div class="col-12 col-md-6">
+              <div class="form-floating mb-3">
+                {{ form.nom.errors }}
+                {{form.nom|add_classes:'form-control'}}
+                <label for="{{form.nom.id_for_label}}"">Nom</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-floating mb-3">
+                {{ form.prenom.errors }}
+                {{form.prenom|add_classes:'form-control'}}
+                <label for="{{form.prenom.id_for_label}}"">Prénom</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row gx-3">
+            <div class="col-12 col-md-6">
+              <div class="form-floating mb-3">
+                {{ form.dateNaissance|add_classes:'form-control'}}
+                <label for="{{form.dateNaissance.id_for_label}}">Né(e) le ...</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <div class="form-floating mb-3">
+                {{ form.genre|add_classes:'form-select'}}
+                <label for="{{form.genre.id_for_label}}">Genre</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row gx-3">
+            <div class="col-12 col-md-6">
+              <div class="form-floating mb-3">
+                {{ form.statut|add_classes:'form-select'}}
+                <label for="{{form.statut.id_for_label}}">Statut</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <p>Classe pour l'année {{annee_en_cours.intitule}}</p>
+          <div class="form-floating mb-3">
+              {{ form.classe}}
+          </div>
+            </div>
+          </div>
+          
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Valider</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        </div>
+      </form>
+      </div>
+    </div>
+</div>
+
+</div>
+
+
+
+{% endblock content %}

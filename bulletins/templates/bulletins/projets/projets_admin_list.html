@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+  <li class="breadcrumb-item active" aria-current="page" class="text-secondary">Projets (admin)</li>
+  
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 mt-4">
+            <h1 class="mb-2">Suivis de projets {{annee_en_cours}}</h1>
+                
+                <div class="row">
+                    <div class="col-12 col-md-5 offset-md-7 col-lg-4 offset-lg-8 mb-1">
+                        <div>
+                            <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                        </div>
+                    </div>
+                </div>
+                <table id="table" 
+                    style="border-color:transparent;"
+                    data-toggle="table"
+                    data-search="true"
+                    data-search-selector="#customSearch"
+                    data-maintain-meta-data="true"
+                    data-height="600"
+                    data-pagination="true"
+                    data-page-list="[10, 25, 50, 100]"
+                    data-page-size="25"
+                    data-locale="fr-FR"
+                    >
+                    <thead>
+                    <tr>
+                        <th data-field="type" data-sortable="true" scope="col">Type</th>
+                        <th data-field="eleve" data-sortable="true" scope="col">Élève</th>
+                        <th data-field="trimestre" data-sortable="true" scope="col" >Trimestre</th>
+                        <th data-field="tuteur" data-sortable="true" scope="col" >Tuteur</th>
+                        <th data-field="relecture" data-sortable="true"scope="col" class="text-center">Relecture</th>
+                        <th data-field="Relecteur" data-sortable="true" scope="col" >Relecteur</th>
+                        <th scope="col" class="text-center" ></th>
+
+                    </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for projet in projets %}
+                        <tr>
+                        <td><a href="{% url 'projets_admin_change' projet.id%}">{{ projet.get_typeProjet_display }}</a></td>    
+                        <td><a href="{% url 'eleve_detail' projet.eleve.id%}">{{ projet.eleve}}</a></td>
+                        <td>{{ projet.trimestre }}</td>
+                        <td>{{ projet.tuteur.nom_court }}</td>
+                        <td class="text-center">{% if projet.relectureActive %}<i class="bi bi-check-circle-fill text-primary"></i>{% else %}<i class="bi bi-x-circle"></i>{% endif %}</td>
+                        <td>{{projet.relecteur.nom_court}}</td>
+                        <td class="text-center" ><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropRemoveProject{{projet.id}}">
+                            <i class="bi bi-trash"></i></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            
+    
+        </div>
+    
+    </div>
+
+    {% for projet in projets %}
+    <div class="modal fade" id="staticBackdropRemoveProject{{projet.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+                <h1 class="modal-title fs-3" id="staticBackdropLabel">Supprimer un suivi de projet</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+
+                <h3>Attention</h3>
+            <p>Vous vous apprêtez à supprimer :</p>
+            <p> <strong>{{projet.get_typeProjet_display}} - {{projet.eleve}} - {{projet.trimestre}}</strong></p>
+            <p>suivi par <strong>{{projet.tuteur}}</strong></p>
+            <p>Cette opération est irréversible !</p>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
+                <a class="btn btn-danger" href="{% url 'projets_admin_delete' projet.id %}">
+                    Supprimer
+                  </a>        </div>
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+    
+</div>
+
+
+
+
+{% endblock content %}

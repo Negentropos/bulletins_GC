@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Bulletins</li>
+
+{% endblock breadcrumb%}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md">
+    <div class="row">
+            <div class="col-12 col-lg-11 col-xl-10 mt-4">
+                {% if 'admin' in request.path %}
+                    <h1 class="mb-5">Éditer Bulletins {{annee_en_cours}}</h1>
+                {% else %}
+                    <h1 class="mb-5">Consulter Bulletins (version provisoire) {{annee_en_cours}}</h1>
+                {% endif %}
+
+                {% if log%}
+                    {% for message in log %}
+
+                    <div class="alert alert-primary alert-dismissible fade show mt-4" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> {{message}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+    
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <fieldset class="mb-3 rounded shadow p-4">
+                        <div class="row">
+                            <div class="col-12">
+                                <h3>Trimestre(s)</h3>
+                                <div class="row">
+                                    <div class="col-md-auto">
+                                        <input type="checkbox" id="trimestre1" name="trimestres" value="1e Trimestre">
+                                        <label for="trimestre1">1e Trimestre</label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <input type="checkbox" id="trimestre2" name="trimestres" value="2e Trimestre">
+                                        <label for="trimestre2">2e Trimestre</label>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <input type="checkbox" id="trimestre3" name="trimestres" value="3e Trimestre">
+                                        <label for="trimestre3">3e Trimestre</label>
+                                        </div>
+                                </div>
+
+                                
+                            </div>
+                            
+                            
+                        </div>
+                        
+                    </fieldset>
+                </div>
+        
+                    </div>
+                    
+    
+            
+            <div class="row gx-1">
+                {% for classe in list_classes %}
+            
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <fieldset class="mb-3 rounded shadow text-center p-4">
+                        <h3 class="mb-2">{{classe.0.nom}}<sup>e</sup> classe</h3>
+    
+                    <input type="checkbox" class="btn-check" name="{{classe.0.nom}}entier" value="True" id="btn-check-outlined{{classe.0.nom}}" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="btn-check-outlined{{classe.0.nom}}">Toute la classe</label><br>
+    
+                    <a class="mb-2 mt-2 btn btn-outline-primary" data-bs-toggle="collapse" href="#collapseClasse{{classe.0.id}}" role="button" aria-expanded="false" aria-controls="collapseClasse{{classe.0.id}}">
+                        <i class="bi bi-people-fill" > sélection</i>
+                      </a>
+    
+                    <div class="collapse" id="collapseClasse{{classe.0.id}}">
+                        <div class="overflow-auto mb-3 mt-2">
+                                {{classe.1.eleves|add_classes:'list_bulletin_eleves'}}
+                        </div>
+                    </div>
+    
+                    </fieldset>
+                    
+                    
+                </div>
+                {% endfor %}
+            </div>
+    
+           
+    
+        </div>
+    </div>
+    
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasOptions" aria-labelledby="offcanvasOptions">
+        <div class="offcanvas-header">
+          <h3 class="offcanvas-title" id="offcanvasExampleLabel">Options d'impression</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+    
+            
+    
+            <div class="form-check form-switch">
+                <input class="form-check-input" name="bulletinUtilisationCompetence" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Utilisation des compétences</label>
+            </div>
+            
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" name="bulletinAbsencesRetards" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Absence & retards</label>
+            </div>
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" name="bulletinAvisCollege" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Avis du collège des professeurs</label>
+            </div>
+
+            
+    
+            {% if 'admin' in request.path %}
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" name="bulletinVersionProvisoire" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Version provisoire</label>
+            </div>
+            
+
+            <div class="form-check form-switch">
+                <input class="form-check-input" name="signatureBulletin" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label class="form-check-label"  for="flexSwitchCheckDefault">Signature du chef d'établissement</label>
+              </div>
+
+              {% endif %}
+
+             
+
+            <h3 class="mb-3 mt-4">Options de mise en page</h3>
+
+            
+
+            <div class="form-floating mb-3">
+                {{ formMiseEnForme.miseEnPage|add_classes:'form-select'}}
+                <label for="{{formMiseEnForme.miseEnPage.id_for_label}}">Sélectionnez une mise en page</label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" name="bulletinNotice" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
+                <label class="form-check-label" for="flexSwitchCheckChecked">Afficher la notice</label>
+            </div>
+            
+        </div>
+      </div>
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 col-lg-11 col-xl-10 p-2">
+                <div class="d-flex justify-content-end">
+                    <a class=" btn btn-danger me-md-2 shadow" data-bs-toggle="offcanvas" href="#offcanvasOptions" role="button" aria-controls="offcanvasOptions">
+                        Options
+                        </a>
+                    
+                        <button type="submit" class="btn btn-primary shadow">Éditer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+
+{% endblock content %}

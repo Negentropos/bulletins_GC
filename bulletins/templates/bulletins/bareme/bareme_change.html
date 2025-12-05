@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item"><a href="{% url 'bareme_admin_list' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Notices</a></li>
+{% endblock breadcrumb%}
+{% block content %}
+<form action="" method="post" class="gx-2"">
+    {% csrf_token %}
+     {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+        <div class="container-fluid container-md mt-4">
+            <div class="row">
+                    <div class="col-12 col-lg-11 col-xl-10">
+            <h1 class="mb-3">Modifier une notice</h1>
+
+            <fieldset class="rounded shadow p-4 mb-4">
+                <h2 class="fs-4 pb-2">Généralités</h2>
+
+                <div class="row">
+                    <div class="col-9">
+                        <div class="form-floating mb-3">
+                            {{form.intitule|add_classes:'form-control'}}
+                            <label for="{{form.intitule.id_for_label}}"">Intitulé</label>
+                        </div>
+                    </div>
+                    <div class="col-md-auto">
+                        <div class="form-check form-switch mt-3">
+                            {{form.defaut|add_classes:'form-check-input'}}
+                            <label class="form-check-label" for="{{form.defaut.id_for_label}}">
+                                        Notice par défaut
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+                
+
+                <div class="form-floating mb-3">
+                    {{form.titre|add_classes:'form-control'}}
+                    <label for="{{form.titre.id_for_label}}"">Titre</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    {{form.intro|add_classes:'form-control h125px'}}
+                    <label for="{{form.titre.id_for_label}}"">Texte introductif</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    {{form.piedPage|add_classes:'form-control h75px'}}
+                    <label for="{{form.piedPage.id_for_label}}"">Pied de page</label>
+                </div>
+
+
+            </fieldset>
+
+            <fieldset class="rounded shadow p-4 mb-4">
+                <h2 class="fs-4 pb-2">Attitude</h2>
+
+
+                <div class="form-floating mb-3">
+                    {{form.attitude|add_classes:'form-control h75px'}}
+                    <label for="{{form.titre.id_for_label}}"">Description</label>
+                </div>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center align-middle">Symbole</th>
+                            <th>Correspondance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">A</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.attitudeA|add_classes:'form-control h75px'}}
+                                    <label for="{{form.attitudeA.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">B</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.attitudeB|add_classes:'form-control h75px'}}
+                                    <label for="{{form.attitudeB.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">C</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.attitudeC|add_classes:'form-control h75px'}}
+                                    <label for="{{form.attitudeC.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">D</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.attitudeD|add_classes:'form-control h75px'}}
+                                    <label for="{{form.attitudeD.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </fieldset>
+
+            <fieldset class="rounded shadow p-4 mb-4">
+                <h2 class="fs-4 pb-2">Engagement</h2>
+
+
+                <div class="form-floating mb-3">
+                    {{form.engagement|add_classes:'form-control h75px'}}
+                    <label for="{{form.engagement.id_for_label}}"">Description</label>
+                </div>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Symbole</th>
+                            <th>Correspondance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">A</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.engagementA|add_classes:'form-control h75px'}}
+                                    <label for="{{form.engagementA.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">B</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.engagementB|add_classes:'form-control h75px'}}
+                                    <label for="{{form.engagementB.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">C</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.engagementC|add_classes:'form-control h75px'}}
+                                    <label for="{{form.engagementC.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">D</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.engagementD|add_classes:'form-control h75px'}}
+                                    <label for="{{form.engagementD.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </fieldset>
+
+            <fieldset class="rounded shadow p-4 mb-4">
+                <h2 class="fs-4 pb-2">Résultat</h2>
+
+
+                <div class="form-floating mb-3">
+                    {{form.resultat|add_classes:'form-control h75px'}}
+                    <label for="{{form.resultat.id_for_label}}"">Description</label>
+                </div>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Symbole</th>
+                            <th>Correspondance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">A</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.resultatA|add_classes:'form-control h75px'}}
+                                    <label for="{{form.resultatA.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">B</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.resultatB|add_classes:'form-control h75px'}}
+                                    <label for="{{form.resultatB.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">C</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.resultatC|add_classes:'form-control h75px'}}
+                                    <label for="{{form.resultatC.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center fs-3 align-middle">D</td>
+                            <td>
+                                <div class="form-floating mb-3">
+                                    {{form.resultatD|add_classes:'form-control h75px'}}
+                                    <label for="{{form.resultatD.id_for_label}}"">Correspondance</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </fieldset>
+    
+    
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary shadow me-2" type="submit">Enregistrer</button>
+                    <a class="btn btn-secondary shadow" href="{% url 'bareme_admin_list' %}">Annuler</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+    
+
+
+{% endblock content %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+        <li class="breadcrumb-item">{% if 'admin' in request.path %}<a href="{% url 'avis_college_admin_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Avis du collège</a>{% else %}<a href="{% url 'avis_college_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Avis du collège</a>{% endif %}</li>
+{% endblock breadcrumb%}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+     {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md mt-4">
+    <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">Modifier un avis trimestriel</h1>
+
+                {% if 'admin' in request.path %}
+
+                <div class="row">
+                    <div class="col-12 col-lg-10 col-xl-8">
+                        <div class="alert alert-primary alert-dismissible fade show mt-1" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> Attention, cette tâche est normalement réservée aux tuteurs de la classe.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+
+                
+
+                <div class="row gx-2">
+
+                    <div class="col-12 col-lg-4 col-xl-3">
+
+                        <div class="form-floating mb-3">
+                            <h2 class="fs-4">{{avis.eleve}}</h2>
+                        </div>
+
+                            <div class="form-floating mb-3">
+                                <h2 class="fs-4">{{avis.trimestre}}</h2>
+                            </div>
+
+
+                    </div>
+
+                    <div class="col-12 col-lg-6 col-xl-5">
+
+                            <div class="form-floating mb-3">
+                                {{form.avis|add_classes:'form-control h200px'}}
+                                <label for="{{form.avis.id_for_label}}"">Avis</label>
+                            </div>
+
+                    </div>
+
+            </fieldset>
+
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary shadow me-2" type="submit">Modifier</button>
+                    {% if 'admin' in request.path %}<a class="btn btn-secondary shadow" href="{% url 'avis_college_admin_liste' %}">Annuler</a>
+                    {% else %}<a class="btn btn-secondary shadow" href="{% url 'avis_college_liste' %}">Annuler</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+
+
+
+
+{% endblock content %}

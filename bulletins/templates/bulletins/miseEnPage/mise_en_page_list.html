@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Notices bulletins</li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 col-11-lg col-xl-10 mt-4">
+                <h1 class="mb-4">Mise en page du bulletin</h1>
+
+                <p><span><a class="btn btn-outline-primary mt-2 shadow" href="{% url 'mise_en_page_add' %}"><i class="bi bi-plus-circle"> Ajouter</i></a></span></p>
+
+
+                {% if mise_en_pages %}
+    
+                <table class="table table-striped" style="border-color:transparent;" id="table"
+                data-toggle="table"
+                >
+                <thead>
+                <tr>
+                    <th scope="col" data-sortable="true">id</th>
+                    <th scope="col" data-sortable="true">Intitulé</th>
+                    <th scope="col" class="text-center" >Supprimer</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for mise_en_page in mise_en_pages %}
+                    <tr>
+                    <td>{{mise_en_page.id}}</td>
+                    <td><a href="{% url 'mise_en_page_change' mise_en_page.id %}">{{mise_en_page.intitule}}</a></td>
+                    <td class="text-center" ><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropRemoveMiseEnPage{{mise_en_page.id}}">
+                        <i class="bi bi-trash"></i></a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        
+            {% else %}
+            <p class="mt-4">Aucune mise en page n'a encore été éditée.</p>
+            {% endif %}
+           
+        </div>
+    
+    </div>
+    
+    {% for mise_en_page in mise_en_pages %}
+    <div class="modal fade" id="staticBackdropRemoveMiseEnPage{{mise_en_page.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-5">
+                <h1 class="modal-title" id="staticBackdropLabel">Supprimer une mise en page</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-5">
+    
+                <h3>Attention</h3>
+            <p>Vous vous apprêtez à supprimer la mise en page "{{mise_en_page.intitule}}".</p>
+
+            <p>Cette opération est irréversible.</p>
+                    
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <a class="btn btn-primary" href="{% url 'mise_en_page_delete' mise_en_page.id %}">
+                    Supprimer
+                  </a>
+            </div>
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+</div>
+
+
+{% endblock content %}

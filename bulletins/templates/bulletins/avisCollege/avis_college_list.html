@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Avis trimestriels</li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 mt-4">
+                <h1 class="mb-2">Avis trimestriels {{annee_en_cours}}</h1>
+                
+                <div class="row mb-2">
+                    {% if trimestres_actif %}
+                    <div class="col-12 col-sm-6 mb-2 mb-md-0 col-md-7 col-lg-8">
+                        <div class="d-flex justify-content-md-end align-items-center">
+                            <a class="btn btn-outline-primary" href="{% url 'avis_college_add' %}"><i class="bi bi-plus-circle"> Ajouter</i></a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-5 col-lg-4">
+                        <div>
+                            <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12 col-sm-6 col-md-5 offset-md-7 col-lg-4 offset-lg-8">
+                        <div class="d-flex justify-content-end align-items-center">
+                            <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <table id="table" 
+                    style="border-color:transparent;"
+                    data-toggle="table"
+                    data-search="true"
+                    data-search-selector="#customSearch"
+                    data-maintain-meta-data="true"
+                    data-height="600"
+                    data-pagination="true"
+                    data-page-list="[10, 25, 50, 100]"
+                    data-page-size="25"
+                    data-locale="fr-FR"
+                    >
+                    <thead>
+                    <tr>
+                        <th data-field="eleve" data-sortable="true" scope="col">Élève</th>
+                        <th data-field="classe" data-sortable="true"  class="text-center" scope="col">Classe</th>
+                        <th data-field="trimestre" data-sortable="true"  scope="col">Trimestre</th>
+                        <th data-field="supprimer" data-sortable="true" scope="col" ></th>
+                    </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for avis in avisCollege %}
+                        <tr {% if request.user in avis.eleve.show_classe.tuteur.all and avis.trimestre in trimestres_actif  %} class="table-secondary" {% endif %}>  
+                        <td>{% if request.user in avis.eleve.show_classe.tuteur.all and avis.trimestre in trimestres_actif  %}<a href="{% url 'avis_college_change' avis.id%}">{{ avis.eleve}}</a>{% else %}<a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropAvisDetail{{avis.id}}">{{ avis.eleve}}</a>{% endif %}</td>
+                        <td class="text-center">{{ avis.eleve.show_classe }}e</td>
+                        <td>{{ avis.trimestre }}</td>
+                        <td>{% if request.user in avis.eleve.show_classe.tuteur.all and avis.trimestre in trimestres_actif  %}<a href="#" data-bs-toggle="modal" data-bs-target="#delete{{avis.id}}">
+                            <i class="bi bi-trash"></i></a>{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            
+    
+        </div>
+    
+    </div>
+</div>
+
+{% for avis in avisCollege %}
+    <div class="modal fade" id="staticBackdropAvisDetail{{avis.id}}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+                <h1 class="modal-title fs-2" id="staticBackdropLabel">Avis trimestriel</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+                <h2>{{avis.eleve}}</h2>
+                <h2 class="fs-4">{{avis.trimestre}}</h2>
+
+
+                <p>{{avis.avis}}</p>
+
+                <p>Tuteur{{ avis.eleve.show_classe.tuteur.all|pluralize }} de la classe : <strong>{{avis.eleve.show_classe.show_tuteur}}</strong> </p>
+
+
+              </div>
+
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+    
+
+    {% for avis in avisCollege %}
+<div class="modal fade" id="delete{{avis.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+            <h1 class="modal-title" id="staticBackdropLabel">Supprimer</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <p>Vous vous apprêtez à supprimer l'avis de {{avis.eleve}} - {{avis.trimestre}}. Attention, cette opération est irréversible.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
+            <a class="btn btn-danger" href="{% url 'avis_college_delete' avis.id %}">Supprimer</a>
+          </div>
+        </div>
+      </div>
+  </div>
+  {% endfor %}
+
+{% endblock content %}

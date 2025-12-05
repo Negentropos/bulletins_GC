@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<div class="container p-0">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb my-auto">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-light">Bulletins {{annee_en_cours}}</a></li>
+          <li class="breadcrumb-item active text-white" aria-current="page">Caneva</li>
+        </ol>
+      </nav>
+  </div>
+{% endblock breadcrumb%}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 mt-5">
+            <h1 class="mb-3">Caneva bulletin</h1>
+
+            <div class="row">
+                <div class="col-12">
+                <h3>Appréciation</h3>
+
+                <fieldset class="rounded shadow">
+                    <legend><strong>tableauAppreciationTotale</strong> - Table</legend>
+
+                    <div class="row gx-2">
+                        <div class="col-3">
+                            <fieldset class="rounded shadow">
+                                <legend><strong>caseDiscipline</strong> - Paragraph</legend>
+
+                            </fieldset>
+                        </div>
+                        <div class="col-3">
+                            <fieldset class="rounded shadow">
+                                <legend><strong>caseDescriptif</strong> - Paragraph</legend>
+                            </fieldset>
+
+                        </div>
+                        <div class="col-6">
+                            <fieldset class="rounded shadow">
+                                <legend><strong>tableauEvaluation</strong> - Table</legend>
+
+                                    <fieldset class="rounded shadow">
+                                        <legend><strong>tableauLigneEvaluation</strong> - Table</legend>
+                                    </fieldset>
+
+                                    <fieldset class="rounded shadow">
+                                        <legend><strong>caseCommentaire</strong> - Paragraph</legend>
+                                    </fieldset>
+
+                                    <fieldset class="rounded shadow">
+                                        <legend><strong>ligneTableauCompetence</strong> - Table</legend>
+
+                                        <div class="row gx-1">
+                                            <div class="col-8">
+                                                <fieldset class="rounded shadow">
+                                                    <legend><strong>competenceIntitule</strong> - Paragraph</legend>
+                                                </fieldset>
+                                            </div>
+                                            <div class="col-4">
+                                                <fieldset class="rounded shadow">
+                                                    <legend><strong>competenceEvaluation</strong>  - Paragraph </legend>
+
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    ...
+                                
+                            </fieldset>
+
+                        </div>
+
+                    </div>
+
+                </fieldset>
+            </div>
+
+            </div>
+
+
+{% endblock content %}

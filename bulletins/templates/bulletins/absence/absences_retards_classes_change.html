@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+
+  <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+  <li class="breadcrumb-item">{% if 'admin' in request.path %}<a href="{% url 'absences_admin_retards' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Absences & retards</a>{% else %}<a href="{% url 'absences_retards' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Absences & retards</a>{% endif %}</li>
+  <li class="breadcrumb-item active" aria-current="page" class="text-secondary">Modifier</li>
+  
+{% endblock breadcrumb%}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 mt-4">
+              <h1 class="mb-4">Absences & Retards {{ classe.nom}} - {{trimestre}}</h1>
+
+                
+    
+                
+
+                <div class="row">
+                    <div class="col-12 col-sm-11 col-lg-10 col-lg-9 col-xl-8">
+                
+
+                        {% if 'admin' in request.path %}
+
+                <div class="alert alert-primary alert-dismissible fade show mt-2" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> En tant qu'administrateur vous pouvez modifier les absences et retards de cette classe.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+
+                <p>Les absences sont comptabilisées par demi-journées.</p>
+                       
+                        <table class="table table-striped" style="border-color:transparent;">
+                        <thead>
+                            <tr>
+                                <th>Élève</th>
+                                <th class="text-center">Nb retards</th>
+                                <th class="text-center">Abs. exc. </th>
+                                <th class="text-center">Abs. non exc.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {{ formset.management_form }}
+                        {% for form,absence in formset|zip:absences %}
+                                {% for hidden in form.hidden_fields %}
+                                {{ hidden }}
+                                {% endfor %}
+                                <tr>
+                                    <td>{{ absence.eleve }}</td>
+                                    <td class="text-center" >{{ form.nbRetard }}</td>
+                                    <td class="text-center" >{{ form.nbAbsenceExc }}</td>
+                                    <td class="text-center" >{{ form.nbAbsenceNonExc }}</td>
+                                </tr>
+                        {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 col-sm-11 col-lg-10 col-lg-9 col-xl-8 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary shadow me-2" type="submit">Modifier</button>
+                    {% if 'admin' in request.path %}
+                    <a class="btn btn-secondary shadow" href="{% url 'absences_admin_retards' %}">Annuler</a>
+                    {% else %}
+                    <a class="btn btn-secondary shadow" href="{% url 'absences_retards' %}">Annuler</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+
+{% endblock content %}
+
+

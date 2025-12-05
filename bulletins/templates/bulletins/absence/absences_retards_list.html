@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Absences & retards</li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 mt-4">
+              <h1 class="mb-4">Absences & Retards {{annee_en_cours}}</h1>
+
+                {% if 'admin' in request.path %}
+
+                <div class="alert alert-primary alert-dismissible fade show mt-4" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> En tant qu'administrateur vous pouvez modifier les absences et retards de toutes les classes.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+                
+                {% if trimestres %}
+                {% if classes %}
+                <table class="table table-striped">
+                
+                <thead>
+    
+                    <tr>
+                        <th>Classe</th>
+                        {% for trimestre in trimestres %}
+                        <th class="text-center">{{ trimestre.intitule }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+    
+                {% for classe in classes %}
+                <tr>
+                    <th>{{ classe.nom }}<sup>e</sup> classe</th>
+                    {% for trimestre in trimestres %}
+                    <th class="text-center">{% if 'admin' in request.path %}<a href="{% url 'absences_admin_retards_classe_change' classe.id trimestre.id %}"><i class="bi bi-tools"></i></a>{% else %}<a href="{% url 'absences_retards_classe_change' classe.id trimestre.id %}"><i class="bi bi-tools"></i></a>{%endif%}</th>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+    
+    
+             </table>
+    
+            {% else %}
+    
+            <p>Vous n'avez pas d'absences ou de retards à renseigner pour une classe.</p>
+    
+            {% endif %}
+            {%else%}
+
+            <p>Aucun trimestre n'est ouvert en édition. Pour consulter les absences et retards d'un élève, rendez-vous sur <a href="{% url 'eleves_list' %}">la page des élèves</a>.</p>
+            
+            {% endif %}
+    
+    </div>
+    
+    </div>
+</div>
+
+
+{% endblock content %}

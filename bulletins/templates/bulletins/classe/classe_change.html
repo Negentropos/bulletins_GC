@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item"><a href="{% url 'classes_list_admin' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Classes (admin)</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Modifier</li>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+          <div class="col-12 col-lg-10 col-xl-8 mt-4">
+              <h1 class="mb-4">{{classe.nom}}e classe - {{classe.annee}}</h1>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+
+        {{ formClasse.edit_classe }}
+
+
+                    <div class="form-floating mb-3">
+                        {{ formClasse.nom.errors }}
+                        {{formClasse.nom|add_classes:'form-control'}}
+                        <label for="{{formClasse.intitule.id_for_label}}"">Nom de la classe</label>
+                    </div>
+                    
+
+                    <label class="fs-5" for="{{formClasse.tuteur.id_for_label}}">Tuteurs</label>
+
+                    <div class="border rounded p-2 border-secondary overflow-auto mb-3 mt-2" style="height:100px">
+                        {{formClasse.tuteur}}
+                    </div>
+
+                    <div class="form-floating mb-3">
+                      {{ formClasse.cycle|add_classes:'form-select'}}
+                      <label for="{{formClasse.cycle.id_for_label}}">Cycle</label>
+                    </div>
+
+            <span><input class="btn btn-primary shadow" type="submit" value="Modifier"></span>
+            <span><a class="btn btn-danger shadow" href="{% url 'classes_list_admin'%}">Annuler</a></span>
+
+        
+        
+    </form>
+
+        <h2 class="mt-4">Effectifs</h2>
+
+        <span><button type="button" class="btn btn-outline-primary mt-2 shadow" data-bs-toggle="modal" data-bs-target="#staticBackdropAddEleveClass">
+            <i class="bi bi-plus-circle" > Ajouter</i>
+        </button></span>
+
+        {% if eleves %}
+
+        <table class="table table-striped" style="border-color:transparent;" id="table"
+        data-toggle="table"
+        data-custom-sort="customSort">
+            <thead>
+              <tr>
+                <th data-sortable="true">Nom & prénom</th>
+                <th class="text-center" data-sortable="true">Genre</th>
+                <th class="text-center" data-sortable="true">Date naissance</th>
+                <th class="text-center" data-sortable="true">Statut</th>
+                <th class="text-center"></th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for eleve in eleves %}
+                <tr>
+                    <td data-sortable="true"> <a href="{%url 'eleve_detail' eleve.id%}">{{eleve.nom}} {{eleve.prenom}}</a> </td>
+                    <td class="text-center" data-sortable="true">{% if eleve.genre == 'M' %}<i class="bi bi-gender-male"></i>{% else %}<i class="bi bi-gender-female"></i>{% endif %}</td>
+                    <td class="text-center" data-sortable="true">{{ eleve.dateNaissance|date:"d/m/Y" }}</td>
+                    <td class="text-center" data-sortable="true">{{ eleve.get_statut_display }}</td>
+                    <td class="text-center" ><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropRemoveEleve{{eleve.id}}">
+                      <i class="bi bi-person-dash"></i></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+
+          {% else %}
+
+          <p>Aucun élève affecté à cette classe.</p>
+
+          {% endif %}
+
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="staticBackdropAddEleveClass" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-3" id="staticBackdropLabel">Ajouter une classe</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="" method="post">
+            {% csrf_token %}
+              {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+              {% endfor %}
+
+              {{ formClasseAddEleve.classe_add_eleve }}
+
+          <div class="modal-body">
+
+            <h1>{{classe.nom}}e classe</h1>
+            <h2>Ajouter des élèves</h2>
+        
+
+            <div class="border rounded p-2 border-primary overflow-auto mb-3 mt-3" style="height:200px" >
+                {{formClasseAddEleve.enseigneeA}}
+            </div>
+            
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary">Valider</button>
+          </div>
+        </form>
+        </div>
+      </div>
+  </div>
+    
+
+</div>
+
+{% for eleve in eleves %}
+    <div class="modal fade" id="staticBackdropRemoveEleve{{eleve.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink">
+                <h1 class="modal-title" id="staticBackdropLabel">Retirer un élève</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+
+                <h3>Attention</h3>
+            <p>Vous vous apprêtez à retirer  <strong>{{eleve.prenom}} {{eleve.nom}}</strong> de la <strong>{{classe.nom}}e classe - {{classe.annee}}</strong></p>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <a class="btn btn-primary" href="{% url 'classe_eleve_remove' classe.id eleve.id %}">
+                    Retirer
+                  </a>  
+                </div>
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+
+{% endblock content %}

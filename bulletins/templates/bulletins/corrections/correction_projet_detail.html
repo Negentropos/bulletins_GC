@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item"><a href="{% url 'corrections_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Mes corrections</a></li>
+
+{% endblock breadcrumb %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+     {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md mt-4">
+        <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">Corriger le suivi de projet de {{projet.eleve.prenom}} {{projet.eleve.nom}}</h1>
+                    <h2>{{projet.eleve.show_classe}}e classe - {{projet.trimestre}}</h2>
+                    <h3>{{projet.get_typeProjet_display}} suivi par {{projet.tuteur}}</h3>
+                
+                    <div class="row row-flex">
+                        <div class="col-12 col-xl-11 mb-lg-5 mb-xl-0">
+                            <fieldset class="content mt-2 rounded shadow p-4 pb-4 pb-lg-2">
+                            
+                                <h4 class="mb-3">Titre</h4>
+
+                                <div class="row">
+
+                                    <div class="col-12 col-lg-6 mb-3">
+                                        <div class="content border rounded p-4 bg-light user-select-all">{{projet.titre|default_if_none:"Non renseigné"}}</div>
+                                    </div>
+                                    <div class="col-12 col-lg-6 mb-3">
+                                        <div class="content form-floating">
+                                            {{form.titre_correction|add_classes:'form-control bg-primary-subtle pt-5 pb-4'}}
+                                            <label for="{{form.titre_correction.id_for_label}}">{% if projet.titre_correction %}Ma correction pour le titre{% else %}Proposer une correction pour le titre{% endif %}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr/>
+
+                                <h4 class="mb-3">Descriptif</h4>
+
+                                <div class="row">
+                                    
+                                    <div class="col-12 col-lg-6 mb-3">
+                                        <div class="content border rounded p-4 bg-light user-select-all">
+                                            {{projet.descriptif|default_if_none:"Non renseigné"}}
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-6 mb-3 ">
+                                        <div class="content form-floating">
+                                            {{form.descriptif_correction|add_classes:'form-control bg-primary-subtle pt-5 pb-4'}}
+                                            <label for="{{form.descriptif_correction.id_for_label}}">{% if projet.descriptif_correction %}Proposer une correction pour le descriptif{% else %}Proposer une correction pour le descriptif{% endif %}</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <h4 class="mb-3">Appréciation</h4>
+
+                                <div class="row">
+                                    
+                                    <div class="col-12 col-lg-6 mb-3">
+                                        <div class="content border rounded p-4 bg-light user-select-all">
+                                            {{projet.appreciation|default_if_none:"Non renseigné"}}
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-6 mb-3 ">
+                                        <div class="content form-floating">
+                                            {{form.appreciation_correction|add_classes:'form-control bg-primary-subtle pt-5 pb-4'}}
+                                            <label for="{{form.appreciation_correction.id_for_label}}">{% if projet.appreciation_correction %}Ma correction{% else %}Proposer une correction pour l'appréciation{% endif %}</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="form-floating mb-3">
+                                    {{form.remarque_correction|add_classes:'form-control bg-danger-subtle pt-5 pb-4'}}
+                                    <label for="{{form.remarque_correction.id_for_label}}">{% if projet.remarque_correction %}Mes remarques{% else %}Une remarque, une suggestion de la part du correcteur ?{% endif %}</label>
+                                </div>
+
+                        </fieldset>
+                    </div>
+                    
+                </div>
+
+                <div class="container-fluid bg-light border-top fixed-bottom">
+                    <div class="container-lg">
+                        <div class="row me-md-1">
+                            <div class="col-12 p-2">
+                                <div class="d-flex justify-content-end">
+                                  <button type="submit" class="btn btn-primary me-2 shadow">Enregistrer</button> 
+                                    {% if 'admin' in request.path %}
+                                    <a href="{% url 'corrections_admin_liste'%}" class="btn btn-secondary shadow me-2">Annuler</a>
+                                    {% else %}
+                                    <a href="{% url 'corrections_liste' %}" class="btn btn-secondary shadow me-2">Annuler</a>
+                                    {% endif %}
+                                    <a class="btn btn-danger" data-bs-toggle="offcanvas" href="#offcanvasNotice" role="button" aria-controls="offcanvasNotice">
+                                        Notice
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+</form>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNotice" aria-labelledby="offcanvasNoticeLabel">
+        <div data-bs-theme="dark" class="offcanvas-header bg-danger">
+          <h3 class="offcanvas-title text-white" id="offcanvasExampleLabel">Notice corrections</h3>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+    
+                <p>Vous pouvez ici proposer des corrections dans les champs dédiés.</p>
+                <p>Ces corrections seront proposées au responsable du projet qui pourra les valider ou les invalider.</p>
+        </div>
+    </div>
+
+
+
+{% endblock content %}

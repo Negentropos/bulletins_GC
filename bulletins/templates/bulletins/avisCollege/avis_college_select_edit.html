@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+<div class="container p-0">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb my-auto">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-light">Bulletins {{annee_en_cours}}</a></li>
+          <li class="breadcrumb-item active text-white" aria-current="page">Avis trimestriels</li>
+        </ol>
+      </nav>
+  </div>
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-8 offset-2">
+            <fieldset class="mb-3 rounded shadow">
+                <legend class="mb-3"><h1>Avis trimestriels {{annee_en_cours.intitule}}</h1></legend>
+                
+                {% if trimestres %}
+                {% if classes %}
+            <table class="table table-striped">
+    
+                <thead>
+    
+                    <tr>
+                        <th>Classe</th>
+                        {% for trimestre in trimestres %}
+                        <th class="text-center">{{ trimestre.intitule }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+    
+                {% for classe in classes %}
+                <tr>
+                    <th>{{ classe.nom }}<sup>e</sup> classe</th>
+                    {% for trimestre in trimestres %}
+                    <th class="text-center"><a href="{% url 'avis_college_change' classe.id trimestre.id %}"><i class="bi bi-people"></i></a></th>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+    
+    
+            </table>
+    
+            {% else %}
+    
+            <p>Vous n'avez pas d'avis à rédiger pour une ou plusieurs classes.</p>
+    
+            {% endif %}
+            {% else %}
+            <p>Aucun trimestre n'est actuellement ouvert en édition.</p>
+            {% endif %}
+        </fieldset>
+    
+    </div>
+    
+    </div>
+</div>
+
+
+{% endblock content %}

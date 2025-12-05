@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item">{% if 'admin' in request.path %}<a href="{% url 'projets_admin_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Suivis de projet</a>{% else %}<a href="{% url 'my_projets_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Mes suivis de projet</a>{%endif%}</li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Modifier</li>
+{% endblock breadcrumb%}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+     {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+<div class="container-fluid container-md mt-4">
+        <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">{{projet.get_typeProjet_display}}</h1>
+                    <h2>{{projet.eleve}} - {{projet.eleve.show_classe}}e</h2>
+
+                    {% if 'admin' in request.path %}
+                    <div class="alert alert-primary alert-dismissible fade show mt-4" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> En tant qu'administrateur vous vous apprêtez à modifier l'enseignement d'un collègue, soyez prudent !
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+    
+                    <div class="row row-flex">
+                        <div class="col-12 col-lg-8 mb-lg-5 mb-xl-0">
+                            <fieldset class="content mt-2 rounded shadow p-4 pb-4 pb-lg-2">
+                                    <h2 class="fs-4 pb-2">Description</h2>
+
+                                <div class="form-floating mb-3">
+                                    {{ form.typeProjet|add_classes:'form-select'}}
+                                    <label for="{{form.typeProjet.id_for_label}}">Sélectionnez un type de projet</label>
+                                </div>
+                
+                                <div class="form-floating mb-3">
+                                    {{form.titre|add_classes:'form-control'}}
+                                    <label for="{{form.titre.id_for_label}}"">Titre</label>
+                                </div>
+            
+                                <div class="form-floating mb-3">
+                                    {{form.descriptif|add_classes:'form-control h150px'}}
+                                    <label for="{{form.descriptif.id_for_label}}"">Descriptif</label>
+                                </div>
+
+                                <div class="form-floating mb-3">
+                                    {{form.appreciation|add_classes:'form-control h150px'}}
+                                    <label for="{{form.appreciation.id_for_label}}"">Appreciation</label>
+                                </div>
+
+
+                            </fieldset>
+                
+                        </div>
+                
+                        <div class="col-12 col-lg-4 mb-lg-5 mb-xl-0">
+                        
+                            <fieldset class="content mt-2 rounded shadow p-4 pb-4 pb-lg-2">
+                                    <h2 class="fs-4 pb-2">Paramètres</h2>
+
+                                {% if 'admin' in request.path%}
+                                <div class="form-floating mt-3">
+                                    {{ form.eleve|add_classes:'form-select'}}
+                                    <label for="{{form.relecteur.id_for_label}}">Sélectionnez un élève</label>
+                                </div>
+
+                                <div class="form-floating mt-3">
+                                    {{ form.trimestre|add_classes:'form-select'}}
+                                    <label for="{{form.relecteur.id_for_label}}">Sélectionnez un trimestre</label>
+                                </div>
+            
+                                <div class="form-floating mt-3">
+                                    {{ form.tuteur|add_classes:'form-select'}}
+                                    <label for="{{form.relecteur.id_for_label}}">Sélectionnez un tuteur</label>
+                                </div>
+                                {%else%}
+                                <div class="form-floating mt-3 d-none">
+                                    {{ form.eleve|add_classes:'form-select'}}
+                                    <label for="{{form.relecteur.id_for_label}}">Sélectionnez un élève</label>
+                                </div>
+
+                                <div class="form-floating mt-3 d-none">
+                                    {{ form.trimestre|add_classes:'form-select'}}
+                                    <label for="{{form.relecteur.id_for_label}}">Sélectionnez un trimestre</label>
+                                </div>
+            
+                                <div class="form-floating mt-3 d-none">
+                                    {{ form.tuteur|add_classes:'form-select'}}
+                                    <label for="{{form.relecteur.id_for_label}}">Sélectionnez un tuteur</label>
+                                </div>
+
+                                {%endif%}
+
+        
+                
+                
+                                <div class="form-check form-switch mt-3">
+                                    {{form.presentBulletin|add_classes:'form-check-input'}}
+                                    <label class="form-check-label" for="{{form.presentBulletin.id_for_label}}">
+                                    Publier dans bulletin
+                                    </label>
+                                </div>
+
+                                <div class="form-check form-switch mt-3">
+                                    {{form.relectureActive|add_classes:'form-check-input'}}
+                                    <label class="form-check-label" for="{{form.relectureActive.id_for_label}}">
+                                    Ouvrir à la relecture
+                                    </label>
+                                </div>
+            
+                                <div class="form-floating mt-3">
+                                    {{ form.relecteur|add_classes:'form-select'}}
+                                    <label for="{{form.relecteur.id_for_label}}">Sélectionnez un relecteur</label>
+                                </div>
+                
+                            </fieldset>
+                
+                        </div>
+                    </div>
+    
+    
+        </div>
+</div>
+
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary me-2 shadow" type="submit">Enregistrer</button>
+                    {% if 'admin' in request.path %}
+                    <a class="btn btn-secondary shadow" href="{% url 'projets_admin_liste' %}">Annuler</a>
+                    {% else %}
+                    <a class="btn btn-secondary shadow" href="{% url 'projets_liste' %}">Annuler</a>
+                    {%endif%}
+                </div>
+        </div>
+    </div>
+</div>
+
+</form>
+    
+
+
+
+{% endblock content %}

@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% block breadcrumb%}
+
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+          <li class="breadcrumb-item">{% if eleve.show_classe == 'ancien élève' %}<a href="{% url 'anciens_eleves_list' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Anciens élèves</a>{% else %}<a href="{% url 'eleves_list' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Élèves</a>{% endif %}</li>
+
+
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 col-11-lg col-xl-10 mt-4">
+            <h1>{{ eleve.nom }} {{eleve.prenom}}</h1>
+    
+            <p class="ps-4">{% if eleve.genre == 'M' %}<i class="bi bi-gender-male"></i>{% else %}<i class="bi bi-gender-female"></i>{% endif %}, né(e) le {{ eleve.dateNaissance }} {% if eleve.show_classe == 'ancien élève'%} - <strong>ancien élève</strong>{% endif %}</p>
+    
+            <fieldset class="mb-3 rounded shadow p-4">
+                <h3 class="pb-2">Classe(s)</h3>
+    
+                <table class="table table-striped">
+                    {% for classe in classes %}
+                    <tr>
+                        <td><a href="{% url 'classe_detail' classe.id %}">{{classe.nom}}e classe {{classe.annee.intitule}}</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+    
+            </fieldset>
+    
+            {% if avisCollege %}
+    
+            <fieldset class="mb-3 rounded shadow p-4">
+                <h3 class="pb-2">Avis du collège des professeurs</h3>
+
+               
+    
+                <table class="table table-striped">
+                    {% for avis in avisCollege %}
+                    <tr>
+                        <td><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropAvisDetail{{avis.id}}">
+                            {{avis.trimestre.intitule}} {{avis.trimestre.annee.intitule}}</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                
+    
+            </fieldset>
+
+            {% endif %}
+    
+            <fieldset class="mb-3 rounded shadow p-4">
+                <h3 class="pb-2">Enseignement(s)</h3>
+                
+                <div class="row">
+                    <div class="col-12 col-md-5 offset-md-7 col-lg-4 offset-lg-8 mb-1">
+                        <div>
+                            <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                        </div>
+                    </div>
+                </div>
+                <table
+                id="table" 
+                style="border-color:transparent;"
+                data-toggle="table"
+                data-search="true"
+                data-search-selector="#customSearch"
+                data-maintain-meta-data="true"
+                data-height="400"
+                data-pagination="true"
+                data-page-list="[10, 25, 50, 100]"
+                data-page-size="25"
+                data-locale="fr-FR"
+                >
+                    <thead>
+                        <tr>
+                            <th data-field="discipline" data-sortable="true" scope="col">Discipline</th>
+                            <th data-field="trimestre" data-sortable="true" scope="col" class="text-center">Trimestre</th>
+                            <th data-field="annee" data-sortable="true" scope="col" class="text-center">Année</th>
+                            <th data-field="attitude" data-sortable="true" scope="col" class="text-center">Attitude</th>
+                            <th data-field="engagement" data-sortable="true" scope="col" class="text-center">Engagement</th>
+                            <th data-field="resultat" data-sortable="true" scope="col" class="text-center">Résultat/Note</th>
+                        </tr>
+                    </thead>
+                    {% for appreciation in appreciations %}
+                    <tr>
+                        <td><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropAppreciationDetail{{appreciation.id}}">
+                            {%if appreciation.discipline.intitule_court%}{{ appreciation.discipline.intitule_court }}{%else%}{{ appreciation.discipline.intitule }}{%endif%} {{ appreciation.discipline.show_classes}} {{ appreciation.discipline.trimestre.show_Tnum}}</a></td>
+                        <td class="text-center">{{appreciation.discipline.trimestre.show_num}}</td>
+                        <td class="text-center">{{appreciation.discipline.trimestre.annee}}</td>
+                        <td class="text-center">{{appreciation.attitude|default_if_none:""}}</td>
+                        <td class="text-center">{{appreciation.engagement|default_if_none:""}}</td>
+                        <td class="text-center">{% if appreciation.note %}{{appreciation.note}}{% else %}{{appreciation.resultat|default_if_none:""}}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </fieldset>
+
+            <fieldset class="mb-3 rounded shadow p-4">
+                <h3 class="pb-2">Stage(s)</h3>
+
+                {% if stages %}
+
+                <table class="table table-striped">
+                    <thead>
+                        <th>Type</th>
+                        <th>Lieu</th>
+                        <th class="text-center">Nb jours</th>
+                        <th>Tuteur</th>
+                    </thead>
+                    {% for stage in stages %}
+                    <tr>
+                        <td><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropStageDetail{{stage.id}}">
+                            {{ stage.get_typeStage_display }}</a></td>
+                        <td>{{ stage.lieuStage }}</td>
+                        <td class="text-center">{{ stage.nbJours }}</td>
+                        <td>{{ stage.tuteur.nom_court }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                {% else %}
+                <p>Aucun stage renseigné.</p>
+                {% endif %}
+
+            </fieldset>
+
+            <fieldset class="mb-3 rounded shadow p-4">
+                <h3 class="pb-2">Projet(s)</h3>
+
+                
+
+                {% if projets %}
+
+                <table class="table table-striped">
+                    <thead>
+                        <th>Type</th>
+                        <th>Titre</th>
+                        <th>Trimestre</th>
+                        <th>Tuteur</th>
+                    </thead>
+                    {% for projet in projets %}
+                    <tr>
+                        <td><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropProjectDetail{{projet.id}}">
+                            {{ projet.get_typeProjet_display }}</a></td>
+                        <td>{{ projet.titre|default_if_none:"" }}</td>
+                        <td>{{projet.trimestre}}</td>
+                        <td>{{ projet.tuteur.nom_court }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+
+                {% else %}
+                <p>Aucun projet renseigné.</p>
+                {% endif %}
+
+            </fieldset>
+    
+            <fieldset class="mb-3 rounded shadow p-4">
+                <h3 class="pb-2">Absence(s) et retard(s)</h3>
+
+                {% if absencesRetards %}
+    
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                        <th>Trimestre</th>
+                        <th class="text-center">Année</th>
+                        <th class="text-center">Retards</th>
+                        <th class="text-center">Absences non exc.</th>
+                        <th class="text-center">Absences tot.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for absence in absencesRetards %}
+                        <tr>
+                            <td >{{absence.trimestre}}</td>
+                            <td class="text-center">{{absence.trimestre.annee.intitule}}</td>
+                            <td class="text-center">{{absence.nbRetard}}</td>
+                            <td class="text-center">{{absence.nbAbsenceNonExc}}</td>
+                            <td class="text-center">{{absence.nbAbsenceTot}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% else %}
+                <p>Aucun retard ou absence renseignés.</p>
+                {% endif %}
+    
+    
+            </fieldset>
+    
+        </div>
+    </div>
+</div>
+
+
+    
+    {% for avis in avisCollege %}
+    <div class="modal fade" id="staticBackdropAvisDetail{{avis.id}}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header bg-warning">
+                <h1 class="modal-title fs-2" id="staticBackdropLabel">{{avis.eleve}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <fieldset class="rounded shadow p-3">
+                    <h3>Avis du collège - {{avis.trimestre}}</h3>
+                </fieldset>
+
+                <fieldset class="rounded shadow p-3 mb-3 mt-3">
+                    {{avis.avis}}
+                </fieldset>
+                </div>
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+    {% for stage in stages %}
+    <div class="modal fade" id="staticBackdropStageDetail{{stage.id}}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-5">
+                <h1 class="modal-title fs-2" id="staticBackdropLabel">{{stage.eleve}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-5">
+
+                <h2 class="mb-4">{{stage.get_typeStage_display}} - {{stage.trimestre}} </h2>
+
+                    <div class="row gx-3">
+                        <div class="col-12 col-md-6">
+                            {% if stage.descriptif %}
+                            <h4>Descriptif</h4>
+
+                                <p>{{stage.descriptif}}</p>
+
+                                <h4>Appreciation</h4>
+
+                                <p>{{stage.appreciation}}</p>
+
+                            {% endif %}
+                           
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Trimestre : <strong>{{stage.trimestre}}</strong></li>
+                                {% if stage.lieuStage %}<li class="list-group-item">Lieu(x) : <strong>{{stage.lieuStage}}</strong></li>{% endif %}
+                                {% if stage.maitreStage %}<li class="list-group-item">Maitre de stage : <strong>{{stage.maitreStage}}</strong></li>{% endif %}
+                                {% if stage.tuteur %}<li class="list-group-item">Tuteur : <strong>{{stage.tuteur}}</strong></li>{% endif %}
+                                {% if stage.dureeStage %}<li class="list-group-item">Durée : <strong>{{stage.nbJours}} jours</strong></li>{% endif %}
+                                {% if stage.dateDebut %}<li class="list-group-item">A démarré le <strong>{{stage.dateDebut}}</strong></li>{% endif %}
+                                {% if stage.dateFin %}<li class="list-group-item">S'est terminé le <strong>{{stage.dateFin}}</strong></li>{% endif %}
+                              </ul>
+
+                        </div>
+                    </div>
+
+
+
+              </div>
+
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+    {% for appreciation in appreciations %}
+    <div class="modal fade" id="staticBackdropAppreciationDetail{{appreciation.id}}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-5">
+                <h1 class="modal-title fs-2" id="staticBackdropLabel">{{appreciation.eleve}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-5">
+
+
+                    <div class="row gx-3 border-bottom mb-3">
+                        <div class="col-12 col-md-6">
+                            <h2 class="mb-3">{%if appreciation.discipline.intitule_court%}{{ appreciation.discipline.intitule_court }}{%else%}{{ appreciation.discipline.intitule }}{%endif%} {{ appreciation.discipline.show_classes}} {{ appreciation.discipline.trimestre.show_Tnum}}</h2>
+
+
+                            {% if appreciation.discipline.titre%} <strong>{{appreciation.discipline.titre}}</strong> {% endif %}
+                            
+                            <p>{{appreciation.discipline.descriptif}}</p>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <ul class="list-group list-group-flush mt-0">
+                                <li class="list-group-item"><strong>{{appreciation.discipline.show_enseignants}}</strong></li>
+                                {% if appreciation.discipline.typeEnseignement %}<li class="list-group-item">{{appreciation.discipline.get_typeEnseignement_display}}{% endif %}
+                                {% if appreciation.discipline.volumeHoraire %}<li class="list-group-item"><strong>{{appreciation.discipline.volumeHoraire}} h</strong></li>{% endif %}
+                                {% if appreciation.discipline.dateDebut %}<li class="list-group-item">A démarré le <strong>{{appreciation.discipline.dateDebut}}</strong></li>{% endif %}
+                                {% if appreciation.discipline.dateFin %}<li class="list-group-item">S'est terminé le <strong>{{appreciation.discipline.dateFin}}</strong></li>{% endif %}
+                              </ul>
+                        </div>
+                    </div>
+
+                    <div class="row gx-3">
+                        <p class="mb-1 fs-5">Évaluation</p>
+                        <div class="col-12 col-md-6">
+                            
+
+                            <p>{{appreciation.commentaire}}</p>
+
+                        </div>
+                        <div class="col-12 col-md-6">
+
+                              <table class="table">
+                                <tbody>
+
+                                    {% if appreciation.attitude %}
+                                    <tr>
+                                        <td class="pt-0">
+                                            <strong>Attitude : </strong>
+                                        </td>
+
+                                        <td class="pt-0">  
+                                            <strong>{{appreciation.attitude}}</strong>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if appreciation.engagement %}
+                                    <tr>
+                                        <td>
+                                            <strong>Engagement :</strong>
+                                        </td>
+
+                                        <td>
+                                            <strong>{{appreciation.engagement}}</strong>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if appreciation.resultat %}
+                                    <tr>
+                                        <td>
+                                            <strong>Résultat :</strong>
+                                        </td>
+
+                                        <td>
+                                            <strong>{{appreciation.resultat}}</strong>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% if appreciation.note %}
+                                    <tr>
+                                        <td>
+                                            <strong>Note : </strong>
+                                        </td>
+
+                                        <td>
+                                            <strong>{{appreciation.note}}</strong>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    
+                                </tbody>
+                              </table>
+
+                        </div>
+
+                    <table class="table table-striped">
+                    {% for competenceAppreciation in competencesAppreciations %}
+                        {% if competenceAppreciation.appreciation == appreciation and competenceAppreciation.evaluation != "-" %}
+                            <tr>
+                                <td>{{competenceAppreciation.competence}}</td>
+                                <td>{{competenceAppreciation.evaluation}}</td>
+                            </tr>
+                        {%endif%}
+                    {% endfor %}
+                    </table>
+                    
+                    </div>
+
+                </fieldset>
+
+              </div>
+
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+    {% for projet in projets %}
+    <div class="modal fade" id="staticBackdropProjectDetail{{projet.id}}" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div data-bs-theme="dark" class="modal-header bg-pink ps-5">
+                <h1 class="modal-title fs-2" id="staticBackdropLabel">{{projet.eleve}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-5">
+
+                    <h2 class="mb-4">{{projet.get_typeProjet_display}} - {{projet.trimestre}}</h2>
+
+
+                    <div class="row gx-5">
+                        <div class="col-12 col-md-6">
+
+                            <h4>{{ projet.titre|default_if_none:"Descriptif" }}</h4>
+
+                            <p>{{projet.descriptif}}</p>
+
+                            <p>{% if projet.tuteur %} Tuteur : <strong>{{projet.tuteur}}</strong>{% endif %}</p>
+
+                        </div>
+                        <div class="col-12 col-md-6">
+
+                            <h4>Appreciation</h4>
+
+                            <p>{{projet.appreciation}}</p>
+        
+
+                        </div>
+                    </div>
+              </div>
+
+            </div>
+      </div>
+    </div>
+    {%  endfor %}
+
+
+
+
+    
+{% endblock content %}

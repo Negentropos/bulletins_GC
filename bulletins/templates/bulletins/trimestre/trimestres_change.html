@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Trimestres (admin)</li>
+{% endblock breadcrumb%}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    {% for hidden in formset.hidden_fields %}
+    {{ hidden }}
+    {% endfor %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 col-lg-10 col-xl-8 mt-4">
+                <h1 class="mb-4">Configuration des trimestres {{annee_en_cours}}</h1>
+    
+           
+    
+        {{ formset.management_form }}
+    
+                {% for form,trimestre in formset|zip:trimestres %}
+                    {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                    {% endfor %}
+                    <fieldset class="mb-3 rounded shadow p-4">
+                        <h4 class="mb-4">{{trimestre.intitule}}</h4>
+
+                        <div class="row">
+                            <div class="col-12 mb-2 mb-md-0 col-md-auto">
+                                <div class="form-floating">
+                                    {{ form.dateDebut|add_classes:'form-control'}}
+                                    <label for="{{form.dateDebut.id_for_label}}">Commence le ...</label>
+                                    </div>
+                            </div>
+                            <div class="col-12 mb-2 mb-md-0  col-md-auto">
+                                <div class="form-floating">
+                                    {{ form.dateFin|add_classes:'form-control'}}
+                                    <label for="{{form.dateFin.id_for_label}}">Termine le ...</label>
+                            </div>
+                                
+                            </div>
+                            <div class="col-12 mb-2 mb-md-0  col-md-auto d-flex align-items-center">
+                                <div class="form-check form-switch">
+                                    {{form.edition|add_classes:'form-check-input'}}
+                                    <label class="form-check-label" for="{{form.edition.id_for_label}}">
+                                    Ouvrir à l'édition
+                                    </label>
+                                </div>
+                                
+                            </div>
+                        </div>
+    
+                    </fieldset>
+                {% endfor %}    
+    
+        </div>
+    </div>
+
+</div>
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 col-lg-10 col-xl-8 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary me-2 shadow" type="submit">Enregistrer</button>
+                    <a class="btn btn-secondary shadow" href="{% url 'home' %}">Annuler</a>
+                </div>
+        </div>
+    </div>
+</div>
+
+</form>
+
+    
+
+{% endblock content %}
+
+

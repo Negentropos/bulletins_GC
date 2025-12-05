@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Anciens élèves</li>
+
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 col-11-lg col-xl-10 mt-4">
+            <h1 class="mb-2">Anciens élèves</h1>
+
+            <div class="row">
+              <div class="col-12 col-md-5 offset-md-7 col-lg-4 offset-lg-8 mb-1">
+                  <div>
+                      <input type="text" name="intitule" placeholder="Filtrer" maxlength="60" class="form-control" id="customSearch">
+                  </div>
+              </div>
+          </div>
+          <table id="table" 
+          style="border-color:transparent;"
+          data-toggle="table"
+          data-search="true"
+          data-search-selector="#customSearch"
+          data-maintain-meta-data="true"
+          data-height="600"
+          data-pagination="true"
+          data-page-list="[10, 25, 50, 100]"
+          data-page-size="50"
+          data-locale="fr-FR"
+          >
+            <thead>
+              <tr>
+                <th data-field="eleve" data-sortable="true" scope="col">Nom & prénom</th>
+                <th data-field="genre" data-sortable="true" data-searchable="false" scope="col" class="text-center">Genre</th>
+                <th data-field="dateNaissance" data-sortable="true" data-searchable="false" scope="col" class="text-center">Date naissance</th>
+                <th data-field="statut" data-sortable="true" scope="col" class="text-center" data-sortable="true">Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for eleve in anciens_eleves %}
+                <tr>
+                    <td > <a href="{%url 'eleve_detail' eleve.id%}">{{eleve.nom}} {{eleve.prenom}}</a> </td>
+                    <td class="text-center">{% if eleve.genre == 'M' %}<i class="bi bi-gender-male"></i>{% else %}<i class="bi bi-gender-female"></i>{% endif %}</td>
+                    <td class="text-center">{{ eleve.dateNaissance|date:"d/m/Y" }}</td>
+                    <td class="text-center">{{ eleve.get_statut_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+
+        
+
+        
+    </div>
+</div>
+</div>
+
+
+{% endblock content %}

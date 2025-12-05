@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+  <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+          <li class="breadcrumb-item">{% if 'admin' in request.path %}<a href="{% url 'disciplines_liste_admin' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Enseignements</a>{%else%}<a href="{% url 'my_disciplines_liste' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Mes enseignements</a>{%endif%}</li>
+          <li class="breadcrumb-item active" aria-current="page" class="text-secondary">Modifier</li>
+{% endblock breadcrumb%}
+{% block content %}
+
+<div class="container-fluid container-md mt-4">
+    <div class="row">
+            <div class="col-12">
+            <h1 class="mb-4">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} - {{discipline.trimestre.show_racc}} - {{discipline.show_classes}}</h1>
+        
+            {% if 'admin' in request.path %}
+            <div class="alert alert-primary alert-dismissible fade show mt-4" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> En tant qu'administrateur vous vous apprêtez à modifier l'enseignement d'un collègue, soyez prudent !
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <form action="" method="post">
+                {% csrf_token %}
+                 {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                    {% endfor %}
+        <div class="row row-flex mt-0">
+        
+                <div class="col-12 col-lg-4 col-xl-4 mb-lg-5 mb-xl-0">
+                    <fieldset class="content mt-2 rounded shadow p-4 pb-4 pb-lg-2">
+                            <h2 class="fs-4">Paramètres</h2>
+
+                        <div class="mt-3">
+                            {% if 'admin' in request.path %}
+                            <label for="{{form.enseigneePar.id_for_label}}">Associer d'autres enseignants</label>
+                            {% else %}
+                            <label for="{{form.enseigneePar.id_for_label}}">Enseignant(s)</label>
+                            {% endif %}
+                            <p class="mt-2">{{form.enseigneePar}}</p>
+                        </div>
+
+                        <div class="form-check form-switch mt-3">
+                            {{form.relectureActive|add_classes:'form-check-input'}}
+                            <label class="form-check-label" for="{{form.relectureActive.id_for_label}}">
+                            Activer la relecture
+                            </label>
+                        </div>
+
+                        <div class="form-floating mt-3">
+                            {{ form.reluPar|add_classes:'form-select'}}
+                            <label for="{{form.reluPar.id_for_label}}">Sélectionnez un relecteur</label>
+                        </div>
+
+                        <div class="form-floating mt-3">
+                            {{ form.typeEnseignement|add_classes:'form-select'}}
+                            <label for="{{form.typeEnseignement.id_for_label}}">Type d'enseignement</label>
+                        </div>
+
+                        <div class="form-floating mt-3">
+                            {{ form.volumeHoraire|add_classes:'form-control'}}
+                            <label for="{{form.volumeHoraire.id_for_label}}">Volume horaire (en h)</label>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                            
+
+                                <div class="form-floating mt-3">
+                                        {{ form.dateDebut|add_classes:'form-control'}}
+                                        <label for="{{form.dateDebut.id_for_label}}">A démarré le...</label>
+                                </div>
+
+                            </div>
+
+                            <div class="col-6">
+                                <div class="form-floating mt-3">
+                                    {{ form.dateFin|add_classes:'form-control'}}
+                                    <label for="{{form.dateFin.id_for_label}}">S'est terminé le...</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-check form-switch mt-3">
+                            {{form.presentBulletin|add_classes:'form-check-input'}}
+                            <label class="form-check-label" for="{{form.presentBulletin.id_for_label}}">
+                            Publier dans bulletin
+                            </label>
+                        </div>
+
+                        <div class="form-check form-switch mt-3">
+                            {{form.activerMoyenne|add_classes:'form-check-input'}}
+                            <label class="form-check-label" for="{{form.activerMoyenne.id_for_label}}">
+                            Afficher la moyenne de la classe
+                            </label>
+                        </div>
+
+                        <div class="form-check form-switch mt-3 mb-3">
+                                    {{form.voirProf|add_classes:'form-check-input'}}
+                                    <label class="form-check-label" for="{{form.voirProf.id_for_label}}">
+                                    Afficher professeur(s)
+                                    </label>
+                        </div>
+                    </fieldset>
+
+        
+                </div>
+        
+                <div class="col-12 col-lg-8 col-xl-8 mb-lg-5 mb-xl-0">
+                    <fieldset class="content mt-2 rounded shadow p-4 pb-4 pb-lg-2">
+                            <h2 class="fs-4 pb-2">Discipline</h2>
+        
+                        <div class="form-floating mb-3">
+                            {{form.intitule|add_classes:'form-control w-100'}}
+                            <label for="{{form.intitule.id_for_label}}"">Intitulé de l'enseignement</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            {{form.intitule_court|add_classes:'form-control w-100'}}
+                            <label for="{{form.intitule_court.id_for_label}}"">Intitulé court</label>
+                        </div>
+
+                        
+        
+                        <div class="form-floating mb-3">
+                            {{ form.titre.errors }}
+                            {{form.titre|add_classes:'form-control'}}
+                            <label for="{{form.intitule.id_for_label}}"">Titre (optionnel)</label>
+                        </div>
+        
+                        <div class="form-floating mb-3">
+                            {{form.descriptif|add_classes:'form-control  h150px'}}
+                            <label for="{{form.descriptif.id_for_label}}"">Descriptif</label>
+                        </div>
+
+                        <h2 class="fs-5 pb-2 mt-4">Compétences</h2>
+    
+                        
+    
+                        {% if competences %}
+    
+                        <table class="table table-striped mt-2">
+                            <tbody>
+                                {% for competence in competences %}
+                                <tr>
+                                <td>{{ competence.intitule }}</td>
+                                <td class="text-center" >{% if 'admin' in request.path %}<a href="{% url 'competence_connaissance_admin_change' discipline.id %}"><i class="bi bi-tools"></i></a>{%else%}<a href="{% url 'competence_connaissance_change' discipline.id %}"><i class="bi bi-tools"></i></a>{%endif%}</td>
+                                <td class="text-center" ><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdropRemoveCompetence{{competence.id}}">
+                                    <i class="bi bi-trash"></i></a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+    
+                        <p><span><button type="button" class="btn btn-outline-primary shadow" data-bs-toggle="modal" data-bs-target="#staticBackdropAddCompetence">
+                            <i class="bi bi-plus-circle" > Ajouter</i>
+                          </button></span></p>
+    
+                        {% else %}
+                        <p><span><button type="button" class="btn btn-outline-primary shadow" data-bs-toggle="modal" data-bs-target="#staticBackdropAddCompetence">
+                            <i class="bi bi-plus-circle" > Ajouter</i>
+                          </button></span></p>
+    
+                            <p>Aucune compétence n'est associée à cet enseignement.</p>
+                        {% endif %}
+                    </fieldset>
+                </div>
+            </div>
+
+
+
+                    
+
+                    
+        
+        </div>
+
+    </div>
+</div>
+        
+</div>
+
+
+<div class="container-fluid bg-light border-top fixed-bottom">
+    <div class="container-lg">
+        <div class="row me-md-1">
+            <div class="col-12 p-2">
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary me-2 shadow" type="submit">Enregistrer</button>
+                    {%if 'admin' in request.path%}
+                    <a class="btn btn-danger me-2 shadow" href="{% url 'discipline_admin_evaluate' discipline.id %}">Évaluer</a>
+                    {%else%}
+                    <a class="btn btn-danger me-2 shadow" href="{% url 'discipline_evaluate' discipline.id %}">Évaluer</a>
+                    {% endif %}
+                    {%if 'admin' in request.path%}
+                    <a class="btn btn-secondary shadow" href="{% url 'disciplines_liste_admin' %}">Annuler</a>
+                    {%else%}
+                    <a class="btn btn-secondary shadow" href="{% url 'disciplines_liste' %}">Annuler</a>
+                    {%endif%}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</form>
+
+<div class="modal fade" id="staticBackdropAddCompetence" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+            <h1 class="modal-title" id="staticBackdropLabel">Ajouter une compétence</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="" method="post">
+            {% for hidden in formComp.hidden_fields %}
+                {{ hidden }}
+                {% endfor %}
+          {% csrf_token %}
+          <div class="modal-body p-4">
+
+            <div class="form-floating">
+                {{formComp.intitule|add_classes:'form-control'}}
+                <label for="{{form.intitule.id_for_label}}">Nouvelle compétence</label>
+            </div>
+
+            <div class="mt-3">
+              <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary">Valider</button>
+            </div>
+                
+          </div>
+
+        </form>
+        </div>
+  </div>
+</div>
+
+{% for competence in competences %}
+<div class="modal fade" id="staticBackdropRemoveCompetence{{competence.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div data-bs-theme="dark" class="modal-header bg-pink ps-4">
+            <h1 class="modal-title" id="staticBackdropLabel">Supprimer une compétence</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <p>Vous vous apprêtez à supprimer la competence : </p>
+        <div class="border rounded p-3 mb-2 bg-light">
+          {{competence.intitule}}
+        </div>
+        <p><strong>Si des appréciations ont été renseignées pour celle-ci, elles seront perdues !</strong></p>
+
+        <div>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Annuler</button>
+            
+
+            {% if 'admin' in request.path%}
+
+            <a class="btn btn-danger" href="{% url 'competence_connaissance_admin_delete' discipline.id competence.id %}">
+              Supprimer
+          </a>
+
+          {%else %}
+          <a class="btn btn-danger" href="{% url 'competence_connaissance_delete' discipline.id competence.id %}">
+            Supprimer
+        </a>
+          {%endif%}
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%  endfor %}
+
+{% endblock content %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block breadcrumb %}
+
+          <li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'discipline_detail' discipline.id %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} | {{discipline.trimestre.show_racc}} | {{discipline.show_classes}}</a></li>
+          <li class="breadcrumb-item active" aria-current="page" class="text-secondary">Élèves</li>
+    
+{% endblock breadcrumb %}
+{% block content %}
+<div class="container-fluid container-md">
+  <div class="row">
+      <div class="col-12 col-lg-11 col-xl-10 mt-4">
+              <h1 class="mb-2">{%if discipline.intitule_court%}{{ discipline.intitule_court }}{%else%}{{discipline.intitule|truncatechars:15}}{%endif%} - {{discipline.show_classes}} - {{discipline.trimestre}}</h1>
+
+              {% if discipline.effectifs %}<p>{{discipline.effectifs}} élève{{ discipline.effectifs|pluralize }} inscrit{{ discipline.effectifs|pluralize }} à cet enseignement</p>{% endif %}
+
+            <table class="table table-striped mt-2">
+                <thead>
+                  <tr>
+                    <th scope="col">Élève</th>
+                    <th scope="col">Date de naissance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {%for eleve in eleves%}
+                    <tr>
+                        <td><a href="{% url 'eleve_detail' eleve.id%}">{{eleve.prenom}} {{eleve.nom}}</a></td>
+                        <td>{{eleve.dateNaissance|date:"d/m/Y"}}</td>
+                    </tr>
+
+                  {%endfor%}
+                </tbody>
+              </table>
+
+    </div>
+</div>
+
+</div>
+
+
+
+{% endblock content %}

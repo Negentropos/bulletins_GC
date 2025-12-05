@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Attention</h1>
+
+    <p>Vous êtes sur le point de supprimer {{ eleve.nom }} {{ eleve.prenom }} de la base</p>
+
+    <p>Cela aura pour conséquence de supprimer toutes appréciations, retards et absences de la base !</p>
+    <form action="" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Confirmer la suppression ?">
+    </form>
+{% endblock content %}
