@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Enseignants</li>
+
+{% endblock breadcrumb%}
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 mt-4">
+              <h1 class="mb-2">Enseignants</h1>
+    
+            <fieldset class="rounded shadow mb-3 p-3">
+                <p class="fs-4">Important</p>
+    
+                <p>Cette page permet uniquement de visualiser les informations sur les enseignants et utilisateurs enregistrés dans la base. Pour des opérations de modification, création, suppression etc., il faut passer par la page d'administration du site.</p>
+            </fieldset>
+    
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Login</th>
+                        <th>Mail</th>
+                        <th>Role</th>
+                        <th>Statut</th>
+                        <th>Dernière connexion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enseignant in enseignants%}
+                    <tr>
+                        <th>{{enseignant.last_name}}</th>
+                        <th>{{enseignant.first_name}}</th>
+                        <td>{{enseignant.username}}</td>
+                        <td>{{enseignant.email}}</td>
+                        <td>{{enseignant.get_role_display}}</td>
+                        <td>{{enseignant.is_active|yesno:"Actif,Inactif,Non défini"}}</td>
+                        <td>{{enseignant.last_login|default_if_none:"jamais"}}</td>    
+                    </tr>
+                    {% endfor %}
+    
+                </tbody>
+    
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

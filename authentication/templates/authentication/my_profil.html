@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load bulletins_extras %}
+{% block breadcrumb%}
+<li class="breadcrumb-item"><a href="{% url 'home' %}" class="link-secondary link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">Accueil</a></li>
+<li class="breadcrumb-item active" aria-current="page" class="text-secondary">Mon profil</li>
+{% endblock breadcrumb%}
+
+{% block content %}
+<div class="container-fluid container-md">
+    <div class="row">
+        <div class="col-12 col-lg-11 col-xl-10 mt-4">
+              <h1 class="mb-4">{{ user.first_name }} {{ user.last_name }}</h1>
+
+                  <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <td>Identifiant :</td>
+                            <td><strong>{{user.username}}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Statut : </td>
+                            <td><strong>{{user.is_active|yesno:"en activité,inactif,non défini"}}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Email : </td>
+                            <td><strong>{{user.email}}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Profil : </td>
+                            <td><strong>{{user.get_role_display}}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Dernière connexion : </td>
+                            <td><strong>{{user.last_login}}</strong></td>
+                        </tr>
+        
+                    </tbody>
+        
+                </table>
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

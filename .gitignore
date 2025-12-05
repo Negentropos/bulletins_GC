@@ -1,0 +1,19 @@
+# .gitignore
+
+# Python & Venv
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+.idea
+
+# Django
+db.sqlite3
+media/
+assets/
+csv/
+node_modules/
+logs/
+
+# Sécurité (NE JAMAIS COMMITTER CES FICHIERS)
+.env

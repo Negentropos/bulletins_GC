@@ -1,0 +1,69 @@
+{% load static %}
+{% load bulletins_extras %}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html class="height100">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EMG - Bulletins</title>
+        <meta name="description" content="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand">
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.4/dist/bootstrap-table.min.css">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+        <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}" >
+        <!-- Font Awesome -->
+        <script src="https://kit.fontawesome.com/14273d579a.js" crossorigin="anonymous"></script>
+    </head>
+    <body class="d-flex align-items-center bg-image">
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <!-- Bootstrap JS bundle -->                
+                
+                <main class="form-signin w-100 m-auto">
+                  <form method="post">
+                    {% csrf_token %}
+                    {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                    {% endfor %}
+                    <img class="mb-3" src="{% static 'images/Logo_EMG_3.png' %}" alt="École Mathias Grünewald">
+
+                      <div class="row">
+                        <div class="col-12 col-lg-10 offset-lg-1 col-xl-8 offset-xl-2 text-center">
+                          <div class="form-floating mb-3 m-auto">
+                      
+                            {{form.username|add_classes:'form-control'}}
+                            <label for="{{form.username.id_for_label}}"">Identifiant</label>
+                          </div>
+                          <div class="form-floating mb-3 m-auto">
+                            {{form.password|add_classes:'form-control'}}
+                            <label for="{{form.password.id_for_label}}">Mot de passe</label>
+                          </div>
+                      
+                          {% if message %}
+                          <ul class="mb-2 list-group list-group-flush">
+                            <li class="rounded list-group-item list-group-item-warning">{{ message }}</li>
+                          </ul>
+                          {% endif %}
+                          <button class="btn btn-lg btn-primary m-auto" type="submit">Connexion</button>
+                        </div>
+                      </div>
+                     
+                      
+                  </form>
+                  </main>
+              </div>
+              
+          <!-- Script js -->
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+          crossorigin="anonymous"></script>
+
+    </body>
+</html>

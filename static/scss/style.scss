@@ -1,0 +1,136 @@
+@import "variables_overrides.scss";   
+
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../node_modules/bootstrap-table/src/bootstrap-table.scss";
+
+
+
+
+fieldset, legend {
+    all: revert;
+    border:none;
+ }
+
+ @media screen and (max-width: 768px) {
+    .strip .striped:nth-of-type(1) + div {
+        background-color: $light;
+    }
+
+    .strip .striped:nth-of-type(2n) + div {
+        background-color: white;
+    }
+
+    .strip .striped:nth-of-type(2n+1) + div {
+        background-color: $light;
+    }
+ }
+
+
+.form-floating > label {
+    color: rgba(var(--bs-body-color-rgb), 0.65);
+}
+
+
+
+.bg-green-300 {
+    background-color: $green-300;
+}
+
+.bg-green-200 {
+    background-color: $green-200;
+}
+
+.bg-purple-300 {
+    background-color: $purple-300;
+}
+
+.bg-purple-200 {
+    background-color: $purple-200;
+}
+
+.bg-pink-300 {
+    background-color: $pink-300;
+}
+
+.bg-pink-400 {
+    background-color: $pink-300;
+}
+
+.bg-pink {
+    background-color: $pink;
+    color: white!important;
+}
+
+.bg-pink-200 {
+    background-color: $pink-200;
+}
+
+.bg-teal-300 {
+    background-color: $teal-300;
+}
+
+.bg-teal-400 {
+    background-color: $teal-300;
+}
+
+.bg-teal {
+    background-color: $teal;
+    color:white;
+}
+
+.bg-teal-200 {
+    background-color: $teal-200;
+}
+
+.bg-image {
+    background-image: url('../../static/images/fonds.jpeg');
+    background-size:cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-attachment: fixed;
+    min-height: 100%;
+    height:auto;
+}
+
+.dropdown-toggle::after {
+    color: white !important;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 1rem;
+}
+
+
+/* le burger du menu responsive en clair */
+
+.custom-toggler.navbar-toggler {
+    border-color: white;
+}
+
+.custom-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+/* pour des colonnes de même hauteur (seulement à partir du point md*/
+
+
+@media screen and (min-width: 992px) {
+    .row-flex {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+      }
+
+    .content {
+        height: 100%;
+    }
+
+  }
+  
+  .bootstrap-table .fixed-table-container.fixed-height .fixed-table-border {
+    border-left:0px;
+    border-right:0px
+  }
