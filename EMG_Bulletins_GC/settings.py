@@ -241,6 +241,7 @@ CSP_DEFAULT_SRC = ("'none'", )
 CSP_BASE_URI = ("'none'", )
 CSP_FRAME_ANCESTORS = ("'none'", )
 CSP_FORM_ACTION = ("'self'", )
+CSP_CONNECT_SRC = ("'self'", )  # Autoriser les connexions à l'API du correcteur
 CSP_STYLE_SRC = ("'self'",'fonts.googleapis.com','kit.fontawesome.com','cdn.jsdelivr.net')
 CSP_SCRIPT_SRC = ("'self'", 'ajax.googleapis.com','code.jquery.com','kit.fontawesome.com', 'unpkg.com', 'cdn.jsdelivr.net')
 CSP_IMG_SRC = ("'self'",'cdn.jsdelivr.net','data: w3.org/svg/2000')
