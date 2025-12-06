@@ -131,20 +131,6 @@ LOGIN_REDIRECT_URL = 'home'
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 LOGS_AVAILABLE = False
 
-try:
-    os.makedirs(LOGS_DIR, exist_ok=True)
-    # Tester si on peut écrire dans le dossier
-    test_file = os.path.join(LOGS_DIR, '.test_write')
-    try:
-        with open(test_file, 'w') as f:
-            f.write('test')
-        os.remove(test_file)
-        LOGS_AVAILABLE = True
-    except (OSError, PermissionError):
-        LOGS_AVAILABLE = False
-except (OSError, PermissionError):
-    LOGS_AVAILABLE = False
-
 # Configuration des handlers selon la disponibilité du dossier logs
 handlers_config = {
     'console': {
@@ -154,7 +140,11 @@ handlers_config = {
     },
 }
 
-if LOGS_AVAILABLE:
+# Essayer de créer les handlers de fichiers, mais ne pas échouer si ça ne marche pas
+try:
+    os.makedirs(LOGS_DIR, exist_ok=True)
+    # Essayer de créer les handlers de fichiers
+    # Si ça échoue, on utilisera uniquement la console
     try:
         handlers_config['file'] = {
             'level': 'ERROR',
@@ -172,9 +162,19 @@ if LOGS_AVAILABLE:
             'backupCount': 5,
             'formatter': 'verbose',
         }
-    except (OSError, PermissionError):
-        # Si on ne peut pas créer les handlers de fichiers, on continue sans
+        # Tester si on peut vraiment écrire (en essayant d'ouvrir le fichier)
+        test_handler = handlers_config['correcteur_file']['class'](
+            filename=handlers_config['correcteur_file']['filename']
+        )
+        test_handler.close()
+        LOGS_AVAILABLE = True
+    except (OSError, PermissionError, ValueError) as e:
+        # Si on ne peut pas créer les handlers de fichiers, on les retire
+        handlers_config.pop('file', None)
+        handlers_config.pop('correcteur_file', None)
         LOGS_AVAILABLE = False
+except (OSError, PermissionError):
+    LOGS_AVAILABLE = False
 
 LOGGING = {
     'version': 1,
