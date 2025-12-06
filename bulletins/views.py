@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.forms import modelformset_factory
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.utils.http import urlencode
@@ -11,6 +11,7 @@ from . import models
 from . import forms
 from . import tools
 import csv
+import requests
 
 @login_required
 def home(request):
@@ -1662,3 +1663,47 @@ def mise_en_page_delete(request,idMiseEnPage):
     info.save()
     mise_en_page.delete()
     return redirect('mise_en_page_list')
+
+@login_required
+def correcteur_orthographe(request):
+    """API pour la correction orthographique via LanguageTool"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+    
+    text = request.POST.get('text', '')
+    if not text:
+        return JsonResponse({'error': 'Texte vide'}, status=400)
+    
+    # Normaliser les sauts de ligne : remplacer \r\n et \r par \n
+    text_normalized = text.replace('\r\n', '\n').replace('\r', '\n')
+    
+    try:
+        # Utilisation de l'API publique LanguageTool (gratuite, limitée à 20 requêtes/minute)
+        response = requests.post(
+            'https://api.languagetool.org/v2/check',
+            data={
+                'text': text_normalized,
+                'language': 'fr',
+                'enabledOnly': 'false'
+            },
+            timeout=5
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            return JsonResponse({
+                'matches': data.get('matches', []),
+                'success': True,
+                'original_text': text  # Retourner le texte original pour référence
+            })
+        else:
+            return JsonResponse({
+                'error': 'Erreur lors de la correction',
+                'success': False
+            }, status=response.status_code)
+            
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({
+            'error': 'Erreur de connexion au service de correction',
+            'success': False
+        }, status=500)

@@ -199,6 +199,9 @@ urlpatterns = [
     #Gestion des enseignants
     path('enseignants/',authentication.views.enseignants_list,name='enseignants_list'),
     path('profil/',authentication.views.myProfil,name="my_profil"),
+    
+    #Correcteur orthographique
+    path('api/correcteur/',bulletins.views.correcteur_orthographe,name='correcteur_orthographe'),
 ]
 
 # Configuration pour servir les fichiers média en développement
