@@ -127,6 +127,41 @@ LOGIN_URL='login'
 LOGIN_REDIRECT_URL = 'home'
 
 # Configuration du logging
+# Créer le dossier logs s'il n'existe pas
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+try:
+    os.makedirs(LOGS_DIR, exist_ok=True)
+    LOGS_AVAILABLE = True
+except (OSError, PermissionError):
+    LOGS_AVAILABLE = False
+
+# Configuration des handlers selon la disponibilité du dossier logs
+handlers_config = {
+    'console': {
+        'level': 'DEBUG' if DEBUG else 'INFO',
+        'class': 'logging.StreamHandler',
+        'formatter': 'simple',
+    },
+}
+
+if LOGS_AVAILABLE:
+    handlers_config['file'] = {
+        'level': 'ERROR',
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': os.path.join(LOGS_DIR, 'django_errors.log'),
+        'maxBytes': 1024 * 1024 * 5,  # 5 MB
+        'backupCount': 5,
+        'formatter': 'verbose',
+    }
+    handlers_config['correcteur_file'] = {
+        'level': 'INFO',
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': os.path.join(LOGS_DIR, 'correcteur.log'),
+        'maxBytes': 1024 * 1024 * 5,  # 5 MB
+        'backupCount': 5,
+        'formatter': 'verbose',
+    }
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -145,37 +180,15 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugFalse',
         },
     },
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django_errors.log'),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'correcteur_file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'correcteur.log'),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'console': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-    },
+    'handlers': handlers_config,
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file', 'console'] if LOGS_AVAILABLE else ['console'],
             'level': 'ERROR',
             'propagate': False,
         },
         'bulletins.views': {
-            'handlers': ['correcteur_file', 'console'],
+            'handlers': ['correcteur_file', 'console'] if LOGS_AVAILABLE else ['console'],
             'level': 'INFO',
             'propagate': False,
         },
