@@ -438,14 +438,14 @@ class CompetencesAppreciations(models.Model):
 
     class TypeEvaluation(models.TextChoices):
         NONEVAL = '-', _("Non évalué")
-        ACQUIS = 'Acquis', _("Acquis")
-        NONACQUIS = 'Non acquis', _("Non acquis")
-        PARTIELLEMENTACQUIS = 'Partiellement acquis', _("Partiellement acquis")
-        GLOBALACQUIS = 'Globalement Acquis', _("Globalement acquis")
+        ACQUIS = 'Bien maîtrisé', _("Bien maîtrisé")
+        NONACQUIS = 'Insuffisamment maîtrisé', _("Insuffisamment maîtrisé")
+        PARTIELLEMENTACQUIS = 'Partiellement maîtrisé', _("Partiellement maîtrisé")
+        GLOBALACQUIS = 'Maîtrisé', _("Maîtrisé")
 
     competence=models.ForeignKey(CompetencesConnaissances,on_delete=models.CASCADE)
     appreciation=models.ForeignKey(Appreciation,on_delete=models.CASCADE)
-    evaluation=models.CharField(max_length=20,choices=TypeEvaluation.choices,default="Non évalué")
+    evaluation=models.CharField(max_length=23,choices=TypeEvaluation.choices,default="Non évalué")
 
     class Meta:
         unique_together= ('competence','appreciation')

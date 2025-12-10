@@ -85,8 +85,8 @@ def creerBulletinAppreciations(appreciation,competences,canvas,dictParamBulletin
     largeur_evaluation = dictParamBulletins['largeur_tot_tab_appreciations'] * dictParamBulletins['largeurEvaluation'] / 100
     largeur_rubrique = largeur_evaluation*1/4*3/4
     largeur_evaluation_rubrique = largeur_evaluation*1/4*1/4
-    largeur_competence = largeur_evaluation*11/15
-    largeur_evaluation_competence=largeur_evaluation*4/15
+    largeur_competence = largeur_evaluation*10/15
+    largeur_evaluation_competence=largeur_evaluation*5/15
 
     TAILLE_POLICE = dictParamBulletins['fontSize']
     font=dictParamBulletins['font']
