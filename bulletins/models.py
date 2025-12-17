@@ -438,10 +438,10 @@ class CompetencesAppreciations(models.Model):
 
     class TypeEvaluation(models.TextChoices):
         NONEVAL = '-', _("Non évalué")
-        ACQUIS = 'Bien maîtrisé', _("Bien maîtrisé")
-        NONACQUIS = 'Insuffisamment maîtrisé', _("Insuffisamment maîtrisé")
-        PARTIELLEMENTACQUIS = 'Partiellement maîtrisé', _("Partiellement maîtrisé")
-        GLOBALACQUIS = 'Maîtrisé', _("Maîtrisé")
+        ACQUIS = 'Très bonne maîtrise', _("Très bonne maîtrise")
+        NONACQUIS = 'Maîtrise insuffisante', _("Maîtrise insuffisante")
+        PARTIELLEMENTACQUIS = 'Maîtrise partielle', _("Maîtrise partielle")
+        GLOBALACQUIS = 'Maîtrise satisfaisante', _("Maîtrise satisfaisante")
 
     competence=models.ForeignKey(CompetencesConnaissances,on_delete=models.CASCADE)
     appreciation=models.ForeignKey(Appreciation,on_delete=models.CASCADE)
