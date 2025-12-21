@@ -792,7 +792,7 @@ def discipline_change(request,idDiscipline):
                     info = models.Journal(utilisateur=request.user,
                                           message=f'''Modification (admin) enseignement {discipline.intitule} {discipline.show_classes()} {discipline.trimestre}''')
                     info.save()
-                return redirect('discipline_change', idDiscipline)
+                return redirect('discipline_admin_change', idDiscipline)
             else :
                 form = forms.MyDisciplineChangeForm(request.POST, instance=discipline, user=request.user.username)
                 if form.is_valid():
