@@ -588,6 +588,8 @@ class SMTPSettingsForm(forms.ModelForm):
             'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Mot de passe (laisser vide pour conserver)'}),
             'from_email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'expediteur@exemple.com'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'email_subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Objet personnalisé...'}),
+            'email_message': forms.Textarea(attrs={'class': 'form-control', 'rows': 8, 'placeholder': 'Message personnalisé...'}),
         }
         help_texts = {
             'host': 'Adresse du serveur SMTP (ex: smtp.gmail.com, smtp.office365.com)',
@@ -597,4 +599,6 @@ class SMTPSettingsForm(forms.ModelForm):
             'password': 'Mot de passe pour l\'authentification SMTP (laisser vide pour conserver le mot de passe actuel)',
             'from_email': 'Adresse email utilisée comme expéditeur par défaut',
             'is_active': 'Activer cette option pour permettre l\'envoi d\'emails via SMTP',
+            'email_subject': 'Objet personnalisé pour les emails de bulletins. Variables disponibles : {prenom}, {nom}, {trimestres}',
+            'email_message': 'Message personnalisé qui accompagne l\'envoi des bulletins. Variables disponibles : {prenom}, {nom}, {trimestres}',
         }

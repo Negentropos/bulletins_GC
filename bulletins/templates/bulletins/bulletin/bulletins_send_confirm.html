@@ -33,6 +33,26 @@
                 </ul>
             </fieldset>
 
+            {% if tuteurs_emails %}
+            <fieldset class="rounded shadow p-4 mb-4">
+                <h2 class="fs-4 pb-2">Tuteurs en copie</h2>
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i> Les tuteurs des classes concernées recevront une copie de chaque bulletin envoyé.
+                </div>
+                <ul class="list-unstyled">
+                    {% for item in tuteurs_emails %}
+                        <li>
+                            <i class="bi bi-person-check text-primary"></i> 
+                            <strong>{{ item.tuteur.first_name }} {{ item.tuteur.last_name }}</strong> 
+                            - {{ item.email }}
+                            <br>
+                            <small class="text-muted ms-4">{{ item.classes }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </fieldset>
+            {% endif %}
+
             {% if eleves_without_emails %}
             <fieldset class="rounded shadow p-4 mb-4 border-danger">
                 <h2 class="fs-4 pb-2 text-danger">Élèves sans adresse email configurée</h2>
@@ -41,7 +61,17 @@
                 </div>
                 <ul class="list-unstyled">
                     {% for eleve in eleves_without_emails %}
-                        <li><i class="bi bi-x-circle text-danger"></i> {{ eleve.prenom }} {{ eleve.nom }}</li>
+                        <li>
+                            <i class="bi bi-x-circle text-danger"></i> 
+                            {{ eleve.prenom }} {{ eleve.nom }}
+                            <small class="text-muted"> - 
+                                {% if eleve.show_classe == "ancien élève" %}
+                                    ancien élève
+                                {% else %}
+                                    {{ eleve.show_classe.show_nom }}
+                                {% endif %}
+                            </small>
+                        </li>
                     {% endfor %}
                 </ul>
                 <p class="text-muted mt-2">
@@ -95,28 +125,38 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item in eleves_with_emails %}
-                                <tr>
-                                    <td><strong>{{ item.eleve.prenom }} {{ item.eleve.nom }}</strong></td>
-                                    <td>
-                                        <div class="d-flex flex-column gap-2">
-                                            {% for email in item.emails %}
-                                            <div class="form-check">
-                                                <input class="form-check-input" 
-                                                       type="checkbox" 
-                                                       name="selected_emails_{{ item.eleve.id }}" 
-                                                       value="{{ email }}" 
-                                                       id="email_{{ item.eleve.id }}_{{ forloop.counter }}" 
-                                                       checked>
-                                                <label class="form-check-label" for="email_{{ item.eleve.id }}_{{ forloop.counter }}">
-                                                    {{ email }}
-                                                </label>
-                                            </div>
-                                            {% endfor %}
+                            {% for item in eleves_with_emails %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.eleve.prenom }} {{ item.eleve.nom }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        {% if item.eleve.show_classe == "ancien élève" %}
+                                            ancien élève
+                                        {% else %}
+                                            {{ item.eleve.show_classe.show_nom }}
+                                        {% endif %}
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-2">
+                                        {% for email in item.emails %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                   type="checkbox" 
+                                                   name="selected_emails_{{ item.eleve.id }}" 
+                                                   value="{{ email }}" 
+                                                   id="email_{{ item.eleve.id }}_{{ forloop.counter }}" 
+                                                   checked>
+                                            <label class="form-check-label" for="email_{{ item.eleve.id }}_{{ forloop.counter }}">
+                                                {{ email }}
+                                            </label>
                                         </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -124,7 +164,7 @@
                 
                 <div class="d-flex justify-content-end gap-2 mt-4">
                     <a href="{% url 'bulletins_admin_select' %}" class="btn btn-secondary shadow">Annuler</a>
-                    <button type="submit" class="btn bg-teal text-white shadow">
+                    <button type="submit" class="btn btn-primary me-md-2 shadow">
                         <i class="bi bi-send"></i> Confirmer l'envoi
                     </button>
                 </div>

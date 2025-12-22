@@ -863,6 +863,21 @@ class SMTPSettings(models.Model):
     password = models.CharField(max_length=255, blank=True, null=True, verbose_name='Mot de passe', help_text='Mot de passe SMTP')
     from_email = models.EmailField(max_length=255, blank=True, null=True, verbose_name='Email expéditeur', help_text='Adresse email utilisée comme expéditeur par défaut')
     is_active = models.BooleanField(default=False, verbose_name='Activer l\'envoi d\'emails', help_text='Cocher pour activer l\'envoi d\'emails via SMTP')
+    email_subject = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Objet des emails de bulletins',
+        help_text='Objet personnalisé pour les emails de bulletins. Vous pouvez utiliser {prenom}, {nom} et {trimestres} comme variables.',
+        default='Bulletin scolaire - {prenom} {nom} - {trimestres}'
+    )
+    email_message = models.TextField(
+        blank=True, 
+        null=True, 
+        verbose_name='Message d\'accompagnement des bulletins',
+        help_text='Message personnalisé qui accompagne l\'envoi des bulletins. Vous pouvez utiliser {prenom}, {nom} et {trimestres} comme variables.',
+        default='Bonjour,\n\nVous trouverez ci-joint le bulletin scolaire de {prenom} {nom} pour {trimestres}.\n\nCordialement,\nL\'équipe de l\'École Mathias Grünewald'
+    )
     
     class Meta:
         verbose_name = 'Paramètres SMTP'
@@ -884,5 +899,20 @@ class SMTPSettings(models.Model):
         Récupère l'instance unique des paramètres SMTP.
         Crée une instance par défaut si elle n'existe pas.
         """
-        obj, created = cls.objects.get_or_create(pk=1)
+        default_subject = 'Bulletin scolaire - {prenom} {nom} - {trimestres}'
+        default_message = 'Bonjour,\n\nVous trouverez ci-joint le bulletin scolaire de {prenom} {nom} pour {trimestres}.\n\nCordialement,\nL\'équipe de l\'École Mathias Grünewald'
+        obj, created = cls.objects.get_or_create(
+            pk=1,
+            defaults={
+                'email_subject': default_subject,
+                'email_message': default_message
+            }
+        )
+        # Si l'instance existe mais n'a pas de sujet/message, utiliser les valeurs par défaut
+        if not obj.email_subject:
+            obj.email_subject = default_subject
+        if not obj.email_message:
+            obj.email_message = default_message
+        if not obj.email_subject or not obj.email_message:
+            obj.save()
         return obj

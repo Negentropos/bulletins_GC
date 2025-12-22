@@ -1787,6 +1787,29 @@ def bulletins_send_confirm(request):
     eleves_with_emails = []
     eleves_without_emails = []
     
+    # Récupérer tous les tuteurs avec leurs classes
+    tuteurs_dict = {}  # {tuteur: [liste des classes]}
+    for eleve in eleves_list:
+        # Récupérer les classes de l'élève pour l'année en cours
+        eleve_classes = eleve.classe.filter(annee=annee_en_cours)
+        for classe in eleve_classes:
+            for tuteur in classe.tuteur.all():
+                if tuteur not in tuteurs_dict:
+                    tuteurs_dict[tuteur] = []
+                if classe not in tuteurs_dict[tuteur]:
+                    tuteurs_dict[tuteur].append(classe)
+    
+    # Récupérer les emails des tuteurs avec leurs classes
+    tuteurs_emails = []
+    for tuteur, classes in tuteurs_dict.items():
+        if tuteur.email:
+            classes_noms = ', '.join([classe.show_nom() for classe in classes])
+            tuteurs_emails.append({
+                'tuteur': tuteur, 
+                'email': tuteur.email,
+                'classes': classes_noms
+            })
+    
     for eleve in eleves_list:
         emails = eleve.get_emails_bulletin_list()
         if emails:
@@ -1804,6 +1827,7 @@ def bulletins_send_confirm(request):
                      'eleves_ids': [e.id for e in eleves_list],
                      'classes_noms': classes_noms,
                      'options': options,
+                     'tuteurs_emails': tuteurs_emails,
                  })
 
 @login_required
@@ -1870,6 +1894,14 @@ def bulletins_send(request):
         
         emails = selected_emails
         
+        # Récupérer les tuteurs de la classe de cet élève uniquement
+        eleve_classes = eleve.classe.filter(annee=annee_en_cours)
+        eleve_tuteurs_emails = []
+        for classe in eleve_classes:
+            for tuteur in classe.tuteur.all():
+                if tuteur.email and tuteur.email not in eleve_tuteurs_emails:
+                    eleve_tuteurs_emails.append(tuteur.email)
+        
         # Générer le bulletin pour cet élève
         try:
             # Créer une ListBulletinScolaire temporaire pour cet élève
@@ -1907,8 +1939,8 @@ def bulletins_send(request):
                 pdf_content = bulletinsEdition.produceBulletinContent()
                 
                 if pdf_content:
-                    # Envoyer l'email avec le PDF en pièce jointe
-                    result = send_bulletin_email(smtp_settings, eleve, trimestres, emails, pdf_content)
+                    # Envoyer l'email avec le PDF en pièce jointe (tuteurs de la classe de l'élève en copie)
+                    result = send_bulletin_email(smtp_settings, eleve, trimestres, emails, pdf_content, cc_emails=eleve_tuteurs_emails)
                 else:
                     error_count += 1
                     errors.append(f'{eleve.prenom} {eleve.nom} : erreur lors de la génération du PDF')
@@ -1944,10 +1976,18 @@ def bulletins_send(request):
     
     return redirect('bulletins_admin_select')
 
-def send_bulletin_email(smtp_settings, eleve, trimestres, recipient_emails, pdf_content):
+def send_bulletin_email(smtp_settings, eleve, trimestres, recipient_emails, pdf_content, cc_emails=None):
     """
     Envoie un bulletin par email.
     Retourne un dictionnaire avec 'success' (bool) et 'error' (str si échec).
+    
+    Args:
+        smtp_settings: Paramètres SMTP
+        eleve: Élève concerné
+        trimestres: Liste des trimestres
+        recipient_emails: Liste des adresses email destinataires
+        pdf_content: Contenu binaire du PDF
+        cc_emails: Liste optionnelle des adresses email en copie (tuteurs)
     """
     try:
         # Créer le message email
@@ -1955,17 +1995,35 @@ def send_bulletin_email(smtp_settings, eleve, trimestres, recipient_emails, pdf_
         msg['From'] = smtp_settings.from_email or smtp_settings.username
         msg['To'] = ', '.join(recipient_emails)
         
-        trimestres_str = ', '.join([t.intitule for t in trimestres])
-        msg['Subject'] = f'Bulletin scolaire - {eleve.prenom} {eleve.nom} - {trimestres_str}'
+        # Ajouter les tuteurs en copie si fournis
+        if cc_emails:
+            msg['Cc'] = ', '.join(cc_emails)
         
-        body = f"""
-Bonjour,
-
-Vous trouverez ci-joint le bulletin scolaire de {eleve.prenom} {eleve.nom} pour {trimestres_str}.
-
-Cordialement,
-L'équipe de l'École Mathias Grünewald
-        """
+        trimestres_str = ', '.join([t.intitule for t in trimestres])
+        
+        # Utiliser le sujet personnalisé ou le sujet par défaut
+        subject_template = smtp_settings.email_subject
+        if not subject_template:
+            subject_template = 'Bulletin scolaire - {prenom} {nom} - {trimestres}'
+        
+        # Remplacer les variables dans le sujet
+        msg['Subject'] = subject_template.format(
+            prenom=eleve.prenom,
+            nom=eleve.nom,
+            trimestres=trimestres_str
+        )
+        
+        # Utiliser le message personnalisé ou le message par défaut
+        message_template = smtp_settings.email_message
+        if not message_template:
+            message_template = 'Bonjour,\n\nVous trouverez ci-joint le bulletin scolaire de {prenom} {nom} pour {trimestres}.\n\nCordialement,\nL\'équipe de l\'École Mathias Grünewald'
+        
+        # Remplacer les variables dans le message
+        body = message_template.format(
+            prenom=eleve.prenom,
+            nom=eleve.nom,
+            trimestres=trimestres_str
+        )
         msg.attach(MIMEText(body, 'plain', 'utf-8'))
         
         # Ajouter le PDF en pièce jointe
@@ -1987,8 +2045,11 @@ L'équipe de l'École Mathias Grünewald
         if smtp_settings.username and smtp_settings.password:
             server.login(smtp_settings.username, smtp_settings.password)
         
-        # Envoi de l'email
-        server.send_message(msg)
+        # Envoi de l'email (inclure les destinataires en copie)
+        all_recipients = recipient_emails.copy()
+        if cc_emails:
+            all_recipients.extend(cc_emails)
+        server.send_message(msg, to_addrs=all_recipients)
         server.quit()
         
         return {'success': True, 'error': None}

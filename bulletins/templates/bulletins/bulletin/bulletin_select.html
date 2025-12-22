@@ -180,7 +180,7 @@
                         </a>
                         <button type="submit" class="btn btn-primary me-md-2 shadow">Éditer</button>
                     {% if 'admin' in request.path and user.role == 'ADMIN' %}
-                        <button type="button" class="btn bg-teal text-white shadow" onclick="prepareSendBulletins()">
+                        <button type="button" class="btn btn-warning me-md-2 shadow" onclick="prepareSendBulletins()">
                             Envoyer
                         </button>
                     {% endif %}
