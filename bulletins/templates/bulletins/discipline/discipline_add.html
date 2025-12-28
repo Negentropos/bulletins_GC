@@ -46,6 +46,16 @@
                                 Afficher professeur(s)
                                 </label>
                             </div>
+
+                            <div class="form-check form-switch mt-3">
+                                {{form.initialiser_evaluations|add_classes:'form-check-input'}}
+                                <label class="form-check-label" for="{{form.initialiser_evaluations.id_for_label}}">
+                                {{form.initialiser_evaluations.label}}
+                                </label>
+                                {% if form.initialiser_evaluations.help_text %}
+                                <small class="form-text text-muted d-block mt-1">{{form.initialiser_evaluations.help_text}}</small>
+                                {% endif %}
+                            </div>
             
                         </fieldset>
                         

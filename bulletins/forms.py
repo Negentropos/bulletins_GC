@@ -274,6 +274,11 @@ class BaremeForm(forms.ModelForm):
         }
 class MyDisciplineForm(forms.ModelForm):
     #Surcharge de la fonction init pour permettre d'exclure de certains champs du formulaire la valeur user
+    initialiser_evaluations = forms.BooleanField(
+        required=False,
+        initial=False,
+        label="Initialiser Attitude et Engagement à B",
+    )
 
     def __init__(self,*args,user=None,trimestre=None,**kwargs):
         super().__init__(*args,**kwargs)

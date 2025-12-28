@@ -768,11 +768,20 @@ def discipline_add(request):
     if request.method=='POST':
         form=forms.MyDisciplineForm(request.POST)
         if form.is_valid():
+            # Récupérer la valeur du champ initialiser_evaluations avant de sauvegarder
+            initialiser_evaluations = form.cleaned_data.get('initialiser_evaluations', False)
             discipline = form.save()
             discipline.enseigneePar.add(request.user)
             eleves = models.Eleve.objects.filter(classe__in=discipline.enseigneeDans.all())
             for eleve in eleves :
                 discipline.enseigneeA.add(eleve)
+                # Si l'option est cochée, créer l'appréciation avec attitude et engagement à "B"
+                if initialiser_evaluations:
+                    appreciation, created = models.Appreciation.objects.get_or_create(
+                        eleve=eleve,
+                        discipline=discipline,
+                        defaults={'attitude': 'B', 'engagement': 'B'}
+                    )
             discipline.calculEffectifs()
             discipline.save()
             info = models.Journal(utilisateur=request.user, message=f'''Création enseignement {discipline.intitule} {discipline.show_classes()} {discipline.trimestre}''')
