@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bulletins', '0084_remove_discipline_ordre'),
+        ('bulletins', '0082_add_email_subject_to_smtp_settings'),
     ]
 
     operations = [
