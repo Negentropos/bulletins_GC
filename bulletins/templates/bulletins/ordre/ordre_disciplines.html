@@ -116,73 +116,98 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const disciplinesList = document.getElementById('disciplines-list');
-    if (!disciplinesList) {
-        console.error('Element disciplines-list not found');
-        return;
-    }
+console.log('Script ordre_disciplines.js chargé');
+(function() {
+    'use strict';
+    
+    function initOrdreDisciplines() {
+        console.log('Initialisation ordre disciplines');
+        const disciplinesList = document.getElementById('disciplines-list');
+        console.log('disciplinesList:', disciplinesList);
+        
+        if (!disciplinesList) {
+            console.error('Element disciplines-list not found');
+            return;
+        }
 
-    function updateOrdreValues() {
-        const items = Array.from(disciplinesList.querySelectorAll('[data-discipline-id]'));
-        items.forEach((item, index) => {
-            const ordreInput = item.querySelector('.ordre-input');
-            const ordreValue = item.querySelector('.ordre-value');
-            if (ordreInput) {
-                ordreInput.value = index;
+        function updateOrdreValues() {
+            const items = Array.from(disciplinesList.querySelectorAll('[data-discipline-id]'));
+            console.log('updateOrdreValues - nombre d\'items:', items.length);
+            items.forEach((item, index) => {
+                const ordreInput = item.querySelector('.ordre-input');
+                const ordreValue = item.querySelector('.ordre-value');
+                if (ordreInput) {
+                    ordreInput.value = index;
+                }
+                if (ordreValue) {
+                    ordreValue.textContent = index;
+                }
+            });
+        }
+
+        function moveItem(item, direction) {
+            console.log('moveItem - direction:', direction);
+            if (direction === 'up') {
+                const prev = item.previousElementSibling;
+                if (prev) {
+                    disciplinesList.insertBefore(item, prev);
+                    updateOrdreValues();
+                }
+            } else if (direction === 'down') {
+                const next = item.nextElementSibling;
+                if (next) {
+                    disciplinesList.insertBefore(next, item);
+                    updateOrdreValues();
+                }
             }
-            if (ordreValue) {
-                ordreValue.textContent = index;
+        }
+
+        // Utiliser la délégation d'événements pour gérer les clics
+        disciplinesList.addEventListener('click', function(e) {
+            console.log('Click détecté sur disciplines-list', e.target);
+            
+            // Trouver le bouton, même si on clique sur l'icône
+            let btn = e.target;
+            while (btn && btn !== disciplinesList && btn !== document.body) {
+                if (btn.classList && (btn.classList.contains('move-up') || btn.classList.contains('move-down'))) {
+                    console.log('Bouton trouvé:', btn.className);
+                    break;
+                }
+                btn = btn.parentElement;
             }
+            
+            if (!btn || btn === disciplinesList || btn === document.body) {
+                console.log('Aucun bouton trouvé');
+                return;
+            }
+            
+            const item = btn.closest('[data-discipline-id]');
+            if (!item) {
+                console.log('Aucun item trouvé');
+                return;
+            }
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const direction = btn.classList.contains('move-up') ? 'up' : 'down';
+            console.log('Déplacement:', direction);
+            moveItem(item, direction);
         });
+
+        // Initialiser les valeurs d'ordre au chargement
+        updateOrdreValues();
+        console.log('Initialisation terminée');
     }
 
-    function moveItem(item, direction) {
-        if (direction === 'up') {
-            const prev = item.previousElementSibling;
-            if (prev) {
-                disciplinesList.insertBefore(item, prev);
-                updateOrdreValues();
-            }
-        } else if (direction === 'down') {
-            const next = item.nextElementSibling;
-            if (next) {
-                disciplinesList.insertBefore(next, item);
-                updateOrdreValues();
-            }
-        }
+    // Essayer plusieurs méthodes de chargement
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initOrdreDisciplines);
+    } else {
+        // DOM déjà chargé
+        initOrdreDisciplines();
     }
-
-    // Utiliser la délégation d'événements pour gérer les clics
-    disciplinesList.addEventListener('click', function(e) {
-        // Trouver le bouton, même si on clique sur l'icône
-        let btn = e.target;
-        while (btn && btn !== disciplinesList) {
-            if (btn.classList && (btn.classList.contains('move-up') || btn.classList.contains('move-down'))) {
-                break;
-            }
-            btn = btn.parentElement;
-        }
-        
-        if (!btn || btn === disciplinesList) {
-            return;
-        }
-        
-        const item = btn.closest('[data-discipline-id]');
-        if (!item) {
-            return;
-        }
-        
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const direction = btn.classList.contains('move-up') ? 'up' : 'down';
-        moveItem(item, direction);
-    });
-
-    // Initialiser les valeurs d'ordre au chargement
-    updateOrdreValues();
-});
+})();
 </script>
 {% endblock content %}
 
