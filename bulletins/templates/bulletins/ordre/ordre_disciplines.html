@@ -115,7 +115,7 @@
     </div>
 </div>
 
-<script>
+<script{% if request.csp_nonce %} nonce="{{ request.csp_nonce }}"{% endif %}>
 console.log('Script ordre_disciplines.js chargé');
 (function() {
     'use strict';
