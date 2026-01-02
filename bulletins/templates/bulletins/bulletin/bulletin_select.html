@@ -180,7 +180,7 @@
                         </a>
                         <button type="submit" class="btn btn-primary me-md-2 shadow">Éditer</button>
                     {% if 'admin' in request.path and user.role == 'ADMIN' %}
-                        <button type="button" class="btn btn-warning me-md-2 shadow" onclick="prepareSendBulletins()">
+                        <button type="button" class="btn btn-warning me-md-2 shadow" id="btn-send-bulletins">
                             Envoyer
                         </button>
                     {% endif %}
@@ -192,7 +192,7 @@
 </form>
 
 {% if 'admin' in request.path and user.role == 'ADMIN' %}
-<script>
+<script{% if request.csp_nonce %} nonce="{{ request.csp_nonce }}"{% endif %}>
 function showAlert(message) {
     // Créer une alerte Bootstrap identique à celle utilisée pour les messages log
     const alertContainer = document.querySelector('.col-12.col-lg-11.col-xl-10.mt-4');
@@ -274,6 +274,14 @@ function prepareSendBulletins() {
     
     window.location.href = '{% url "bulletins_send_confirm" %}?' + params.toString();
 }
+
+// Attacher l'événement au bouton "Envoyer" au lieu d'utiliser onclick
+document.addEventListener('DOMContentLoaded', function() {
+    const btnSendBulletins = document.getElementById('btn-send-bulletins');
+    if (btnSendBulletins) {
+        btnSendBulletins.addEventListener('click', prepareSendBulletins);
+    }
+});
 </script>
 {% endif %}
 
